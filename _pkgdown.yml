@@ -1,0 +1,69 @@
+url: https://atnt.github.io/spatialcovariates/
+
+template:
+  bootstrap: 5
+  bootswatch: cosmo
+
+home:
+  title: Automated Covariate Fetching for Plot2Map
+  description: >
+    Fetch, process, and stack environmental covariates for forest biomass mapping
+    and bias modeling workflows.
+
+navbar:
+  structure:
+    left: [home, reference, articles, news]
+    right: [github]
+  components:
+    home:
+      icon: fas fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    articles:
+      text: Articles
+      menu:
+      - text: Getting Started
+        href: articles/getting-started.html
+    news:
+      text: Changelog
+      href: news/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/aTnT/spatialcovariates
+
+reference:
+  - title: Main Function
+    desc: >
+      The primary user-facing function to fetch all covariates at once.
+    contents:
+      - getBiasCovariates
+
+  - title: Individual Covariate Functions
+    desc: >
+      Functions to fetch specific environmental covariates.
+    contents:
+      - getESACCIAGB
+      - getPotapovHeight
+      - getDinersteinBiome
+      - getSextonTreeCover
+      - getSRTMTerrain
+      - getIFL
+
+  - title: Package Documentation
+    desc: >
+      General package information and help.
+    contents:
+      - spatialcovariates-package
+
+articles:
+  - title: Tutorials
+    navbar: ~
+    contents:
+      - getting-started
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with

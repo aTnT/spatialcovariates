@@ -8,3 +8,8 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^codecov\.yml$
+^\.lintr$
+^run_tests\.R$
+^check_structure\.sh$
+^TESTING\.md$
