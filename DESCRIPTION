@@ -1,0 +1,36 @@
+Package: spatialcovariates
+Type: Package
+Title: Automated Covariate Fetching for Plot2Map Bias Modeling
+Version: 0.1.0
+Authors@R: c(
+    person("Plot2Map", "Developers", email = "plot2map@example.com", role = c("aut", "cre"))
+    )
+Description: Provides automated functions to fetch, process, and stack environmental
+    covariates commonly used in Plot2Map workflows for bias modeling and uncertainty
+    quantification. The package focuses on reproducibility by downloading data from
+    reliable sources, clipping rasters to user-specified extents, and resampling to
+    target resolutions (e.g., 10 km to match ESA CCI AGB maps). Supports multiple
+    data sources including ESA CCI Biomass, Global Forest Canopy Height, RESOLVE
+    Ecoregions, Tree Cover datasets, SRTM terrain, and Intact Forest Landscapes.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.0)
+Imports:
+    terra (>= 1.7-78),
+    sf (>= 1.0-16),
+    httr (>= 1.4.7),
+    rvest (>= 1.0.0),
+    pbapply (>= 1.7-0),
+    parallel,
+    stringr (>= 1.5.0),
+    utils
+Suggests:
+    testthat (>= 3.2.0),
+    knitr,
+    rmarkdown
+RoxygenNote: 7.2.0
+VignetteBuilder: knitr
+URL: https://github.com/aTnT/spatialcovariates
+BugReports: https://github.com/aTnT/spatialcovariates/issues
