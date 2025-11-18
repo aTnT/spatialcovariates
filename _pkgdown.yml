@@ -12,7 +12,7 @@ home:
 
 navbar:
   structure:
-    left: [home, reference, articles, news]
+    left: [home, reference, news]
     right: [github]
   components:
     home:
@@ -21,11 +21,6 @@ navbar:
     reference:
       text: Reference
       href: reference/index.html
-    articles:
-      text: Articles
-      menu:
-      - text: Getting Started
-        href: articles/getting-started.html
     news:
       text: Changelog
       href: news/index.html
@@ -33,35 +28,8 @@ navbar:
       icon: fab fa-github fa-lg
       href: https://github.com/aTnT/spatialcovariates
 
-reference:
-  - title: Main Function
-    desc: >
-      The primary user-facing function to fetch all covariates at once.
-    contents:
-      - getBiasCovariates
-
-  - title: Individual Covariate Functions
-    desc: >
-      Functions to fetch specific environmental covariates.
-    contents:
-      - getESACCIAGB
-      - getPotapovHeight
-      - getDinersteinBiome
-      - getSextonTreeCover
-      - getSRTMTerrain
-      - getIFL
-
-  - title: Package Documentation
-    desc: >
-      General package information and help.
-    contents:
-      - spatialcovariates-package
-
-articles:
-  - title: Tutorials
-    navbar: ~
-    contents:
-      - getting-started
+# Reference section will auto-discover exported functions
+# Manual grouping can be added after man/ files are generated
 
 footer:
   structure:
