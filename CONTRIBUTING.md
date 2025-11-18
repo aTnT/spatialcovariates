@@ -235,7 +235,8 @@ When adding support for a new environmental covariate:
     - Implement retry logic for downloads
     - Handle errors gracefully
 4.  **Add to main wrapper**:
-    - Integrate into `getBiasCovariates()`
+    - Integrate into
+      [`getBiasCovariates()`](https://atnt.github.io/spatialcovariates/reference/getBiasCovariates.md)
     - Add optional `include_datasource` parameter
 5.  **Document thoroughly**:
     - Full roxygen2 documentation

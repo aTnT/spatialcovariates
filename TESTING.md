@@ -286,7 +286,9 @@ DESCRIPTION file is complete
 
 ## Getting Help
 
-- Package documentation: `?spatialcovariates`
-- Function help: `?getBiasCovariates`
+- Package documentation:
+  [`?spatialcovariates`](https://atnt.github.io/spatialcovariates/reference/spatialcovariates-package.md)
+- Function help:
+  [`?getBiasCovariates`](https://atnt.github.io/spatialcovariates/reference/getBiasCovariates.md)
 - Run examples: `example(getBiasCovariates)`
 - Report issues: <https://github.com/aTnT/spatialcovariates/issues>

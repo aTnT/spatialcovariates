@@ -98,15 +98,15 @@
 <span></span>
 <span><span class="co"># Test extent validation</span></span>
 <span><span class="va">bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">75</span>, <span class="op">-</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">70</span>, <span class="op">-</span><span class="fl">5</span><span class="op">)</span></span>
-<span><span class="va">validated</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu">validate_extent</span><span class="op">(</span><span class="va">bbox</span><span class="op">)</span></span>
+<span><span class="va">validated</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu"><a href="reference/validate_extent.html">validate_extent</a></span><span class="op">(</span><span class="va">bbox</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">validated</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Test resolution parsing</span></span>
-<span><span class="va">res_meters</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu">parse_resolution</span><span class="op">(</span><span class="st">"10km"</span><span class="op">)</span></span>
+<span><span class="va">res_meters</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu"><a href="reference/parse_resolution.html">parse_resolution</a></span><span class="op">(</span><span class="st">"10km"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="va">res_meters</span> <span class="op">==</span> <span class="fl">10000</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Test tile name generation</span></span>
-<span><span class="va">tiles</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu">calculate_tile_names</span><span class="op">(</span><span class="va">bbox</span>, tile_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">tiles</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu"><a href="reference/calculate_tile_names.html">calculate_tile_names</a></span><span class="op">(</span><span class="va">bbox</span>, tile_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">tiles</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -115,13 +115,13 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://atnt.github.io/spatialcovariates/">spatialcovariates</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Test year/version validation</span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu">validate_esacci_args</span><span class="op">(</span><span class="fl">2010</span>, <span class="st">"v3.0"</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu"><a href="reference/validate_esacci_args.html">validate_esacci_args</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="st">"v3.0"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2010</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">version</span> <span class="op">==</span> <span class="st">"v3.0"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Test tile naming</span></span>
 <span><span class="va">bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">75</span>, <span class="op">-</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">70</span>, <span class="op">-</span><span class="fl">5</span><span class="op">)</span></span>
-<span><span class="va">tiles</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu">esacci_tile_names</span><span class="op">(</span><span class="va">bbox</span>, <span class="fl">2010</span>, <span class="st">"v3.0"</span>, type <span class="op">=</span> <span class="st">"agb"</span><span class="op">)</span></span>
+<span><span class="va">tiles</span> <span class="op">&lt;-</span> <span class="fu">spatialcovariates</span><span class="fu">:::</span><span class="fu"><a href="reference/esacci_tile_names.html">esacci_tile_names</a></span><span class="op">(</span><span class="va">bbox</span>, <span class="fl">2010</span>, <span class="st">"v3.0"</span>, type <span class="op">=</span> <span class="st">"agb"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">tiles</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -134,7 +134,7 @@
 <span><span class="va">test_bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="op">-</span><span class="fl">74</span>, ymin <span class="op">=</span> <span class="fl">4</span>, xmax <span class="op">=</span> <span class="op">-</span><span class="fl">73</span>, ymax <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Test Dinerstein biomes (downloads global shapefile ~50 MB)</span></span>
-<span><span class="va">biomes</span> <span class="op">&lt;-</span> <span class="fu">getDinersteinBiome</span><span class="op">(</span></span>
+<span><span class="va">biomes</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getDinersteinBiome.html">getDinersteinBiome</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">test_bbox</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span>,</span>
 <span>  download <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -143,7 +143,7 @@
 <span></span>
 <span><span class="co"># Test ESA CCI download (1-2 tiles)</span></span>
 <span><span class="co"># WARNING: Each tile is ~100 MB</span></span>
-<span><span class="va">agb</span> <span class="op">&lt;-</span> <span class="fu">getESACCIAGB</span><span class="op">(</span></span>
+<span><span class="va">agb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">test_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
 <span>  version <span class="op">=</span> <span class="st">"v3.0"</span>,</span>
@@ -161,7 +161,7 @@
 <span><span class="va">small_bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="op">-</span><span class="fl">74</span>, ymin <span class="op">=</span> <span class="fl">4</span>, xmax <span class="op">=</span> <span class="op">-</span><span class="fl">73</span>, ymax <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fetch all covariates (will download several GB of data!)</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">small_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"25km"</span>,  <span class="co"># Use coarser resolution for testing</span></span>
@@ -289,9 +289,9 @@
 </ul></div>
 <div class="section level2">
 <h2 id="getting-help">Getting Help<a class="anchor" aria-label="anchor" href="#getting-help"></a></h2>
-<ul><li>Package documentation: <code>?spatialcovariates</code>
+<ul><li>Package documentation: <code><a href="reference/spatialcovariates-package.html">?spatialcovariates</a></code>
 </li>
-<li>Function help: <code>?getBiasCovariates</code>
+<li>Function help: <code><a href="reference/getBiasCovariates.html">?getBiasCovariates</a></code>
 </li>
 <li>Run examples: <code>example(getBiasCovariates)</code>
 </li>

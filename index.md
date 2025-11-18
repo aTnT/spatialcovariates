@@ -35,14 +35,15 @@ devtools::install_github("aTnT/spatialcovariates")
 
 ### Fetch All Covariates at Once
 
-The simplest workflow uses `getBiasCovariates()` to download and stack
-all environmental covariates:
+The simplest workflow uses
+[`getBiasCovariates()`](https://atnt.github.io/spatialcovariates/reference/getBiasCovariates.md)
+to download and stack all environmental covariates:
 
 ``` r
 library(spatialcovariates)
 
-# Define region of interest (Mexico example)
-mexico_bbox <- c(xmin = -118, ymin = 14, xmax = -86, ymax = 33)
+# Define region of interest (example within Mexico)
+mexico_bbox <- c(xmin = -101, ymin = 20.5, xmax = -100.5, ymax = 21)
 
 # Fetch all covariates at 10km resolution
 covariates <- getBiasCovariates(
@@ -77,14 +78,14 @@ bias_model <- extractBiasCovariates(
 
 ## Available Covariates
 
-| Covariate          | Function               | Source                   | Resolution | Years                  |
-|--------------------|------------------------|--------------------------|------------|------------------------|
-| **AGB & SD**       | `getESACCIAGB()`       | ESA CCI Biomass          | 100m       | 2010, 2017-2022        |
-| **Forest Height**  | `getPotapovHeight()`   | GLAD/Potapov et al.      | 30m        | ~2019                  |
-| **Biomes**         | `getDinersteinBiome()` | RESOLVE Ecoregions       | Vector     | 2017 (static)          |
-| **Tree Cover**     | `getSextonTreeCover()` | UMD GLCF                 | 30m        | 2010, 2015             |
-| **Slope & Aspect** | `getSRTMTerrain()`     | SRTM v4.1                | 90m        | Static                 |
-| **Intact Forests** | `getIFL()`             | Intact Forest Landscapes | Vector     | 2000, 2013, 2016, 2020 |
+| Covariate          | Function                                                                                           | Source                   | Resolution | Years                  |
+|--------------------|----------------------------------------------------------------------------------------------------|--------------------------|------------|------------------------|
+| **AGB & SD**       | [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md)             | ESA CCI Biomass          | 100m       | 2010, 2017-2022        |
+| **Forest Height**  | [`getPotapovHeight()`](https://atnt.github.io/spatialcovariates/reference/getPotapovHeight.md)     | GLAD/Potapov et al.      | 30m        | ~2019                  |
+| **Biomes**         | [`getDinersteinBiome()`](https://atnt.github.io/spatialcovariates/reference/getDinersteinBiome.md) | RESOLVE Ecoregions       | Vector     | 2017 (static)          |
+| **Tree Cover**     | [`getSextonTreeCover()`](https://atnt.github.io/spatialcovariates/reference/getSextonTreeCover.md) | UMD GLCF                 | 30m        | 2010, 2015             |
+| **Slope & Aspect** | [`getSRTMTerrain()`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md)         | SRTM v4.1                | 90m        | Static                 |
+| **Intact Forests** | [`getIFL()`](https://atnt.github.io/spatialcovariates/reference/getIFL.md)                         | Intact Forest Landscapes | Vector     | 2000, 2013, 2016, 2020 |
 
 ## Individual Covariate Examples
 
@@ -364,7 +365,8 @@ And cite the original data sources (see Data Sources section above).
 
 ## Support
 
-- Documentation: `?spatialcovariates`
+- Documentation:
+  [`?spatialcovariates`](https://atnt.github.io/spatialcovariates/reference/spatialcovariates-package.md)
 - Bug reports: <https://github.com/aTnT/spatialcovariates/issues>
 - Questions: Open a GitHub discussion
 

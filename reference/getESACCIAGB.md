@@ -1,0 +1,87 @@
+# Fetch ESA CCI Biomass AGB and SD maps
+
+Downloads and processes ESA CCI Biomass Aboveground Biomass (AGB) and
+Standard Deviation (SD) maps for a specified region, year, and version.
+
+## Usage
+
+``` r
+getESACCIAGB(
+  extent,
+  year = 2010,
+  version = "v3.0",
+  resolution = "10km",
+  outdir = NULL,
+  download = TRUE,
+  tiles_dir = "data/ESACCI-BIOMASS",
+  n_cores = 1
+)
+```
+
+## Arguments
+
+- extent:
+
+  sf object, SpatVector, or numeric bbox vector (xmin, ymin, xmax, ymax)
+  specifying the region of interest
+
+- year:
+
+  Numeric or "latest", year to fetch (2010, 2015-2022). Default: 2010
+
+- version:
+
+  Character or "latest", ESA CCI version (v2.0-v6.0). Default: "v3.0"
+
+- resolution:
+
+  Character, target resolution (e.g., "10km", "1000m"). Default: "10km"
+
+- outdir:
+
+  Character, optional directory to save processed rasters. Default: NULL
+
+- download:
+
+  Logical, whether to download tiles (TRUE) or use existing. Default:
+  TRUE
+
+- tiles_dir:
+
+  Character, directory containing existing tiles (if download=FALSE).
+  Default: "data/ESACCI-BIOMASS"
+
+- n_cores:
+
+  Integer, number of cores for parallel download. Default: 1
+
+## Value
+
+Named list with two SpatRaster objects: `agb` (Aboveground Biomass in
+Mg/ha) and `sd` (Standard Deviation in Mg/ha). If SD data is not
+available, sd will be NULL.
+
+## References
+
+Santoro, M., & Cartus, O. (2023). ESA Biomass Climate Change Initiative
+(Biomass_cci): Global datasets of forest above-ground biomass for the
+years 2010, 2017, 2018, 2019 and 2020. NERC EDS Centre for Environmental
+Data Analysis.
+[doi:10.5285/5f331c418e9f4935b8eb1b836f8a91b8](https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+library(sf)
+# Define extent for Mexico
+mexico_bbox <- c(xmin = -118, ymin = 14, xmax = -86, ymax = 33)
+
+# Fetch ESA CCI Biomass for 2010
+biomass <- getESACCIAGB(mexico_bbox, year = 2010, resolution = "10km")
+
+# Access AGB and SD
+plot(biomass$agb, main = "AGB 2010")
+plot(biomass$sd, main = "SD 2010")
+} # }
+```

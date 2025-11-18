@@ -218,9 +218,10 @@ with `@param`, `@return`, `@examples` in Rd format.
 - **Unit Tests**: For each function, test on a small extent (e.g.,
   Mexico bbox) with `testthat`. Assert: Non-NA cells \> 0, CRS matches
   EPSG:4326, resolution ~10km.
-- **Integration Test**: Run full `getBiasCovariates()` and verify stack
-  has 7 layers; compare outputs to notebook’s pre-aggregated files (if
-  provided).
+- **Integration Test**: Run full
+  [`getBiasCovariates()`](https://atnt.github.io/spatialcovariates/reference/getBiasCovariates.md)
+  and verify stack has 7 layers; compare outputs to notebook’s
+  pre-aggregated files (if provided).
 - **Edge Cases**: Non-forest extents (e.g., desert), invalid years,
   missing outdir.
 

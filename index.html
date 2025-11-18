@@ -87,15 +87,15 @@
 <div class="section level3">
 <h3 id="fetch-all-covariates-at-once">Fetch All Covariates at Once<a class="anchor" aria-label="anchor" href="#fetch-all-covariates-at-once"></a>
 </h3>
-<p>The simplest workflow uses <code>getBiasCovariates()</code> to download and stack all environmental covariates:</p>
+<p>The simplest workflow uses <code><a href="reference/getBiasCovariates.html">getBiasCovariates()</a></code> to download and stack all environmental covariates:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://atnt.github.io/spatialcovariates/">spatialcovariates</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Define region of interest (Mexico example)</span></span>
-<span><span class="va">mexico_bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="op">-</span><span class="fl">118</span>, ymin <span class="op">=</span> <span class="fl">14</span>, xmax <span class="op">=</span> <span class="op">-</span><span class="fl">86</span>, ymax <span class="op">=</span> <span class="fl">33</span><span class="op">)</span></span>
+<span><span class="co"># Define region of interest (example within Mexico)</span></span>
+<span><span class="va">mexico_bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="op">-</span><span class="fl">101</span>, ymin <span class="op">=</span> <span class="fl">20.5</span>, xmax <span class="op">=</span> <span class="op">-</span><span class="fl">100.5</span>, ymax <span class="op">=</span> <span class="fl">21</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fetch all covariates at 10km resolution</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span>,</span>
@@ -145,42 +145,42 @@
 <tbody>
 <tr class="odd">
 <td><strong>AGB &amp; SD</strong></td>
-<td><code>getESACCIAGB()</code></td>
+<td><code><a href="reference/getESACCIAGB.html">getESACCIAGB()</a></code></td>
 <td>ESA CCI Biomass</td>
 <td>100m</td>
 <td>2010, 2017-2022</td>
 </tr>
 <tr class="even">
 <td><strong>Forest Height</strong></td>
-<td><code>getPotapovHeight()</code></td>
+<td><code><a href="reference/getPotapovHeight.html">getPotapovHeight()</a></code></td>
 <td>GLAD/Potapov et al.</td>
 <td>30m</td>
 <td>~2019</td>
 </tr>
 <tr class="odd">
 <td><strong>Biomes</strong></td>
-<td><code>getDinersteinBiome()</code></td>
+<td><code><a href="reference/getDinersteinBiome.html">getDinersteinBiome()</a></code></td>
 <td>RESOLVE Ecoregions</td>
 <td>Vector</td>
 <td>2017 (static)</td>
 </tr>
 <tr class="even">
 <td><strong>Tree Cover</strong></td>
-<td><code>getSextonTreeCover()</code></td>
+<td><code><a href="reference/getSextonTreeCover.html">getSextonTreeCover()</a></code></td>
 <td>UMD GLCF</td>
 <td>30m</td>
 <td>2010, 2015</td>
 </tr>
 <tr class="odd">
 <td><strong>Slope &amp; Aspect</strong></td>
-<td><code>getSRTMTerrain()</code></td>
+<td><code><a href="reference/getSRTMTerrain.html">getSRTMTerrain()</a></code></td>
 <td>SRTM v4.1</td>
 <td>90m</td>
 <td>Static</td>
 </tr>
 <tr class="even">
 <td><strong>Intact Forests</strong></td>
-<td><code>getIFL()</code></td>
+<td><code><a href="reference/getIFL.html">getIFL()</a></code></td>
 <td>Intact Forest Landscapes</td>
 <td>Vector</td>
 <td>2000, 2013, 2016, 2020</td>
@@ -196,7 +196,7 @@
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch AGB and SD for 2010</span></span>
-<span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu">getESACCIAGB</span><span class="op">(</span></span>
+<span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
 <span>  version <span class="op">=</span> <span class="st">"v3.0"</span>,</span>
@@ -212,7 +212,7 @@
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch Potapov height data</span></span>
-<span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu">getPotapovHeight</span><span class="op">(</span></span>
+<span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getPotapovHeight.html">getPotapovHeight</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
 <span><span class="op">)</span></span>
@@ -224,7 +224,7 @@
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch RESOLVE Ecoregions biomes</span></span>
-<span><span class="va">biomes</span> <span class="op">&lt;-</span> <span class="fu">getDinersteinBiome</span><span class="op">(</span></span>
+<span><span class="va">biomes</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getDinersteinBiome.html">getDinersteinBiome</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
 <span><span class="op">)</span></span>
@@ -237,7 +237,7 @@
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch Sexton tree cover for 2015</span></span>
-<span><span class="va">treecover</span> <span class="op">&lt;-</span> <span class="fu">getSextonTreeCover</span><span class="op">(</span></span>
+<span><span class="va">treecover</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getSextonTreeCover.html">getSextonTreeCover</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2015</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
@@ -250,7 +250,7 @@
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch SRTM terrain derivatives</span></span>
-<span><span class="va">terrain</span> <span class="op">&lt;-</span> <span class="fu">getSRTMTerrain</span><span class="op">(</span></span>
+<span><span class="va">terrain</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getSRTMTerrain.html">getSRTMTerrain</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
 <span><span class="op">)</span></span>
@@ -264,7 +264,7 @@
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch IFL 2016</span></span>
-<span><span class="va">ifl</span> <span class="op">&lt;-</span> <span class="fu">getIFL</span><span class="op">(</span></span>
+<span><span class="va">ifl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getIFL.html">getIFL</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2016</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
@@ -282,7 +282,7 @@
 <p>Fetch only specific covariates:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch only AGB, height, and terrain</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span>,</span>
@@ -297,14 +297,14 @@
 <p>Avoid re-downloading by using local files:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First download</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  download <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  data_dir <span class="op">=</span> <span class="st">"my_data"</span>  <span class="co"># Save tiles here</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Later: reprocess without downloading</span></span>
-<span><span class="va">covariates_new</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span></span>
+<span><span class="va">covariates_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  download <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  data_dir <span class="op">=</span> <span class="st">"my_data"</span>  <span class="co"># Use existing tiles</span></span>
@@ -315,7 +315,7 @@
 </h3>
 <p>Save processed covariates to disk:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span>,</span>
@@ -332,15 +332,15 @@
 <span><span class="co"># From sf polygon</span></span>
 <span><span class="va">mexico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="st">"countries.shp"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="st">"Mexico"</span><span class="op">)</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span>extent <span class="op">=</span> <span class="va">mexico</span><span class="op">)</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">mexico</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># From terra SpatVector</span></span>
 <span><span class="va">mexico_vect</span> <span class="op">&lt;-</span> <span class="fu">vect</span><span class="op">(</span><span class="va">mexico</span><span class="op">)</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span>extent <span class="op">=</span> <span class="va">mexico_vect</span><span class="op">)</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">mexico_vect</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># From numeric bbox</span></span>
 <span><span class="va">bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="op">-</span><span class="fl">118</span>, ymin <span class="op">=</span> <span class="fl">14</span>, xmax <span class="op">=</span> <span class="op">-</span><span class="fl">86</span>, ymax <span class="op">=</span> <span class="fl">33</span><span class="op">)</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span>extent <span class="op">=</span> <span class="va">bbox</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">bbox</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -440,7 +440,7 @@
 <p>If downloads fail due to network issues:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Increase timeout</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">bbox</span>,</span>
 <span>  <span class="co"># Downloads will retry with exponential backoff</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -451,14 +451,14 @@
 <p>For very large regions at fine resolution:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use coarser resolution</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">large_bbox</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"25km"</span>  <span class="co"># Instead of "10km"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Or fetch covariates separately</span></span>
-<span><span class="va">agb</span> <span class="op">&lt;-</span> <span class="fu">getESACCIAGB</span><span class="op">(</span>extent <span class="op">=</span> <span class="va">large_bbox</span>, resolution <span class="op">=</span> <span class="st">"25km"</span><span class="op">)</span></span>
-<span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu">getPotapovHeight</span><span class="op">(</span>extent <span class="op">=</span> <span class="va">large_bbox</span>, resolution <span class="op">=</span> <span class="st">"25km"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">agb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">large_bbox</span>, resolution <span class="op">=</span> <span class="st">"25km"</span><span class="op">)</span></span>
+<span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getPotapovHeight.html">getPotapovHeight</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">large_bbox</span>, resolution <span class="op">=</span> <span class="st">"25km"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="data-source-changes">Data Source Changes<a class="anchor" aria-label="anchor" href="#data-source-changes"></a>
@@ -488,7 +488,7 @@ R package version 0.1.0. https://github.com/aTnT/spatialcovariates</code></pre>
 <h2 id="support">Support<a class="anchor" aria-label="anchor" href="#support"></a>
 </h2>
 <ul>
-<li>Documentation: <code>?spatialcovariates</code>
+<li>Documentation: <code><a href="reference/spatialcovariates-package.html">?spatialcovariates</a></code>
 </li>
 <li>Bug reports: <a href="https://github.com/aTnT/spatialcovariates/issues" class="external-link uri">https://github.com/aTnT/spatialcovariates/issues</a>
 </li>

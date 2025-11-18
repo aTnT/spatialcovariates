@@ -232,7 +232,7 @@
 <ul><li>
 <strong>Unit Tests</strong>: For each function, test on a small extent (e.g., Mexico bbox) with <code>testthat</code>. Assert: Non-NA cells &gt; 0, CRS matches EPSG:4326, resolution ~10km.</li>
 <li>
-<strong>Integration Test</strong>: Run full <code>getBiasCovariates()</code> and verify stack has 7 layers; compare outputs to notebook’s pre-aggregated files (if provided).</li>
+<strong>Integration Test</strong>: Run full <code><a href="reference/getBiasCovariates.html">getBiasCovariates()</a></code> and verify stack has 7 layers; compare outputs to notebook’s pre-aggregated files (if provided).</li>
 <li>
 <strong>Edge Cases</strong>: Non-forest extents (e.g., desert), invalid years, missing outdir.</li>
 </ul></div>
@@ -244,7 +244,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://atnt.github.io/spatialcovariates/">spatialcovariates</a></span><span class="op">)</span></span>
 <span><span class="va">mexico</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="st">"ne_10m_admin_0_countries.shp"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">ADM0_A3</span> <span class="op">==</span> <span class="st">"MEX"</span><span class="op">)</span></span>
-<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu">getBiasCovariates</span><span class="op">(</span><span class="va">mexico</span>, year <span class="op">=</span> <span class="fl">2010</span>, resolution <span class="op">=</span> <span class="st">"10km"</span><span class="op">)</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span><span class="va">mexico</span>, year <span class="op">=</span> <span class="fl">2010</span>, resolution <span class="op">=</span> <span class="st">"10km"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">covariates</span><span class="op">)</span></span>
 <span><span class="co"># Now pass to Plot2Map::extractBiasCovariates(plot_data, map_agb_raster = covariates[["agb"]], covariate_rasters = covariates[-1])</span></span></code></pre></div>
 </li>
