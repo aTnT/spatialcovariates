@@ -80,12 +80,14 @@ esacci_tile_names <- function(roi, year, version, type = "agb") {
     lat_str <- sprintf("%02d", abs(lat))
 
     # Construct filename based on type
+    # Note: CEDA uses 'fv' prefix for file version (e.g., fv3.0 not v3.0)
+    file_version <- gsub("^v", "fv", version)
     if (type == "sd") {
       tile_names[i] <- sprintf("%s%s%s%s_ESACCI-BIOMASS-L4-AGB_SD-MERGED-100m-%d-%s.tif",
-                              lat_letter, lat_str, lon_letter, lon_str, year, version)
+                              lat_letter, lat_str, lon_letter, lon_str, year, file_version)
     } else {
       tile_names[i] <- sprintf("%s%s%s%s_ESACCI-BIOMASS-L4-AGB-MERGED-100m-%d-%s.tif",
-                              lat_letter, lat_str, lon_letter, lon_str, year, version)
+                              lat_letter, lat_str, lon_letter, lon_str, year, file_version)
     }
   }
 
@@ -128,18 +130,18 @@ download_esacci_biomass <- function(roi = NULL,
 
   # Construct base URL
   # Format: https://data.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/v3.0/geotiff/2010/
-  version_num <- gsub("v|\\.0$", "", version)
-  if (version == "v5.01") version_num <- "5.01"
+  # Use version string as-is (Plot2Map approach)
+  base_url <- sprintf("https://data.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/%s/geotiff/%d/",
+                     version, year)
 
-  base_url <- sprintf("https://data.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/v%s/geotiff/%d/",
-                     version_num, year)
-
-  # Fetch file listing from URL
+  # Fetch file listing from URL using html_table (Plot2Map method)
   message(sprintf("Fetching file list from %s", base_url))
   tryCatch({
     page <- rvest::read_html(base_url)
-    file_links <- rvest::html_attr(rvest::html_nodes(page, "a"), "href")
-    available_files <- grep("\\.tif$", file_links, value = TRUE)
+    file_table <- rvest::html_table(page, fill = TRUE)[[1]]
+    available_files <- file_table$X1  # First column contains filenames
+    # Filter for .tif files only
+    available_files <- grep("\\.tif$", available_files, value = TRUE)
   }, error = function(e) {
     stop(sprintf("Failed to fetch file list from %s: %s", base_url, e$message))
   })

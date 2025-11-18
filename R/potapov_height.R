@@ -1,15 +1,41 @@
 # Potapov Forest Canopy Height Functions
 
-#' Generate Potapov height tile names for a region
+#' Determine which Potapov continental tile(s) cover a region
 #'
 #' @param roi sf object, SpatVector, or numeric bbox
 #'
-#' @return Character vector of tile names
+#' @return Character vector of continental tile codes (e.g., "NAM", "SAM")
 #' @keywords internal
 potapov_tile_names <- function(roi) {
   bbox <- validate_extent(roi)
-  tile_names <- calculate_tile_names(bbox, tile_size = 10)
-  return(tile_names)
+
+  # Continental tile definitions (approximate bounding boxes)
+  continents <- list(
+    NAM = c(xmin = -180, ymin = 5, xmax = -50, ymax = 85),      # North America
+    SAM = c(xmin = -85, ymin = -60, xmax = -30, ymax = 15),     # South America
+    SASIA = c(xmin = 60, ymin = -12, xmax = 155, ymax = 55),    # South Asia
+    NASIA = c(xmin = 25, ymin = 35, xmax = 180, ymax = 80),     # North Asia
+    SAFR = c(xmin = 10, ymin = -35, xmax = 55, ymax = 0),       # South Africa
+    NAFR = c(xmin = -20, ymin = 0, xmax = 55, ymax = 40),       # North Africa
+    AUS = c(xmin = 110, ymin = -45, xmax = 180, ymax = -10)     # Australia
+  )
+
+  # Find which continents intersect with ROI
+  tiles <- character(0)
+  for (cont_name in names(continents)) {
+    cont_bbox <- continents[[cont_name]]
+    # Check if bboxes intersect
+    if (bbox[1] < cont_bbox[3] && bbox[3] > cont_bbox[1] &&
+        bbox[2] < cont_bbox[4] && bbox[4] > cont_bbox[2]) {
+      tiles <- c(tiles, cont_name)
+    }
+  }
+
+  if (length(tiles) == 0) {
+    stop("ROI does not intersect with any Potapov continental tiles")
+  }
+
+  return(tiles)
 }
 
 #' Download Potapov Forest Canopy Height data
@@ -35,15 +61,12 @@ download_potapov_height <- function(roi = NULL,
 
   ensure_directory(output_folder)
 
-  # Try multiple potential sources
-  # Source 1: GLAD UMD server
-  base_url <- "https://glad.umd.edu/dataset/gedi/"
+  # GLAD UMD Potapov height data
+  # Source: https://glad.umd.edu/dataset/gedi/
+  # Data is available as large continental tiles
+  base_url <- "https://glad.geog.umd.edu/Potapov/Forest_height_2019/"
 
   message("Fetching Potapov height tile list...")
-
-  # For now, construct tile URLs based on known naming convention
-  # Format: Forest_height_2019_PALSAR_ALOS_<tile>.tif
-  # Since web scraping may not work, we'll construct URLs for required tiles
 
   if (!is.null(roi)) {
     tile_names <- potapov_tile_names(roi)
@@ -51,11 +74,9 @@ download_potapov_height <- function(roi = NULL,
     stop("Global download not implemented. Please specify an roi.")
   }
 
-  # Construct file URLs
-  # Note: The actual URL structure may vary - this is a placeholder
-  # In practice, we may need to use a different source or API
-  file_urls <- sprintf("https://glad.umd.edu/Potapov/GEDI_V27/Forest_height_2019_%s.tif",
-                      tile_names)
+  # Construct file URLs for continental tiles
+  # Format: Forest_height_2019_NAM.tif, Forest_height_2019_SAM.tif, etc.
+  file_urls <- sprintf("%sForest_height_2019_%s.tif", base_url, tile_names)
 
   message(sprintf("Attempting to download %d Potapov height tile(s)...", length(tile_names)))
 

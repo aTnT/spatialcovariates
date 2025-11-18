@@ -14,7 +14,8 @@
 hansen_tile_names <- function(roi) {
   bbox <- validate_extent(roi)
 
-  # Hansen uses 10x10 degree tiles
+  # Hansen uses 10x10 degree tiles named by top-left corner
+  # Get all corners of the bbox
   crds <- expand.grid(
     x = c(bbox[1], bbox[3]),
     y = c(bbox[2], bbox[4])
@@ -23,14 +24,28 @@ hansen_tile_names <- function(roi) {
   tile_names <- character(nrow(crds))
 
   for (i in 1:nrow(crds)) {
+    # Western (left) edge of tile
     lon <- 10 * (crds$x[i] %/% 10)
+    # Southern (bottom) edge of tile
     lat <- 10 * (crds$y[i] %/% 10)
 
-    # Hansen naming: N/S for latitude, E/W for longitude
-    lat_letter <- ifelse(lat >= 0, "N", "S")
-    lon_letter <- ifelse(lon >= 0, "E", "W")
+    # Hansen tiles are named by top-left corner (north edge, west edge)
+    north_lat <- lat + 10  # Top of the tile
 
-    lat_str <- sprintf("%02d", abs(lat))
+    # Handle special case: equatorial tile (0 to -10) is named "00N"
+    if (north_lat == 0) {
+      lat_letter <- "N"
+      lat_str <- "00"
+    } else if (north_lat > 0) {
+      lat_letter <- "N"
+      lat_str <- sprintf("%02d", north_lat)
+    } else {
+      lat_letter <- "S"
+      lat_str <- sprintf("%02d", abs(north_lat))
+    }
+
+    # Longitude uses western edge
+    lon_letter <- ifelse(lon >= 0, "E", "W")
     lon_str <- sprintf("%03d", abs(lon))
 
     tile_names[i] <- paste0(lat_str, lat_letter, "_", lon_str, lon_letter)
