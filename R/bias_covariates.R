@@ -257,6 +257,17 @@ getBiasCovariates <- function(extent,
                  length(covariates_list),
                  paste(names(covariates_list), collapse = ", ")))
 
+  # Align all rasters to a common grid before stacking
+  # Use the first raster as template
+  template <- covariates_list[[1]]
+
+  if (length(covariates_list) > 1) {
+    for (i in 2:length(covariates_list)) {
+      # Resample to match template extent and resolution
+      covariates_list[[i]] <- terra::resample(covariates_list[[i]], template, method = "near")
+    }
+  }
+
   # Stack all rasters
   covariate_stack <- terra::rast(covariates_list)
   names(covariate_stack) <- names(covariates_list)

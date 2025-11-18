@@ -86,8 +86,11 @@ process_dinerstein_biomes <- function(shp_file, extent, resolution = "10km", out
   }
 
   # Crop to extent for efficiency
+  # Fix invalid geometries before cropping to avoid S2 errors
   extent_sf <- sf::st_as_sfc(sf::st_bbox(bbox, crs = 4326))
+  sf::sf_use_s2(FALSE)  # Disable spherical geometry for invalid source data
   ecoreg <- sf::st_crop(ecoreg, extent_sf)
+  sf::sf_use_s2(TRUE)  # Re-enable S2
 
   if (nrow(ecoreg) == 0) {
     stop("No ecoregions found within the specified extent")

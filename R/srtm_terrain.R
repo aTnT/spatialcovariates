@@ -12,8 +12,19 @@ srtm_tile_names <- function(roi) {
   bbox <- validate_extent(roi)
 
   # SRTM uses 5x5 degree tiles
-  lons <- seq(floor(bbox[1] / 5) * 5, floor(bbox[3] / 5) * 5, by = 5)
-  lats <- seq(floor(bbox[2] / 5) * 5, floor(bbox[4] / 5) * 5, by = 5)
+  # Need to include tiles that overlap the bbox, not just floor of max values
+  lon_min <- floor(bbox[1] / 5) * 5
+  lon_max <- floor(bbox[3] / 5) * 5
+  # If max longitude is not on tile boundary, we need the next tile
+  if (bbox[3] > lon_max && bbox[3] <= lon_max + 5) lon_max <- lon_max + 0  # Already have it
+
+  lat_min <- floor(bbox[2] / 5) * 5
+  lat_max <- floor(bbox[4] / 5) * 5
+  # If max latitude extends beyond the tile, need the next tile
+  if (bbox[4] > lat_max) lat_max <- lat_max + 5
+
+  lons <- seq(lon_min, lon_max, by = 5)
+  lats <- seq(lat_min, lat_max, by = 5)
 
   tile_grid <- expand.grid(lon = lons, lat = lats)
 
@@ -107,6 +118,9 @@ download_srtm_dem <- function(roi = NULL,
   if (n_cores > 1) {
     cl <- parallel::makeCluster(n_cores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
+    # Export internal functions to cluster workers
+    parallel::clusterExport(cl, "download_with_retry",
+                          envir = asNamespace("spatialcovariates"))
     downloaded_files <- pbapply::pblapply(tile_names, download_single, cl = cl)
   } else {
     downloaded_files <- pbapply::pblapply(tile_names, download_single)
@@ -174,7 +188,14 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
 
   # Crop to extent
   extent_vect <- terra::ext(bbox[1], bbox[3], bbox[2], bbox[4])
-  dem <- terra::crop(dem, extent_vect)
+  tryCatch({
+    dem <- terra::crop(dem, extent_vect)
+  }, error = function(e) {
+    stop(sprintf("Failed to crop DEM to extent [%s]. DEM extent: [%s]. Error: %s",
+                paste(bbox, collapse=", "),
+                paste(as.vector(terra::ext(dem)), collapse=", "),
+                e$message))
+  })
 
   # Compute terrain derivatives BEFORE aggregation for accuracy
   message("Computing slope and aspect...")

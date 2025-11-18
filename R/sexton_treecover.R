@@ -116,6 +116,9 @@ download_sexton_treecover <- function(roi = NULL,
   if (n_cores > 1) {
     cl <- parallel::makeCluster(n_cores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
+    # Export internal functions to cluster workers
+    parallel::clusterExport(cl, "download_with_retry",
+                          envir = asNamespace("spatialcovariates"))
     downloaded_files <- pbapply::pblapply(seq_along(tile_names), download_single, cl = cl)
   } else {
     downloaded_files <- pbapply::pblapply(seq_along(tile_names), download_single)

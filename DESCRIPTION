@@ -30,7 +30,7 @@ Suggests:
     testthat (>= 3.2.0),
     knitr,
     rmarkdown
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 URL: https://github.com/aTnT/spatialcovariates
 BugReports: https://github.com/aTnT/spatialcovariates/issues

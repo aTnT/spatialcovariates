@@ -111,31 +111,70 @@ download_with_retry <- function(url, destfile, max_attempts = 3, timeout = 600, 
   on.exit(options(timeout = old_timeout))
   options(timeout = max(timeout, old_timeout))
 
+  wget_tried <- FALSE  # Track if wget fallback was attempted
+  ssl_warnings <- character(0)  # Capture SSL warnings
+
   for (attempt in 1:max_attempts) {
+    current_attempt <- attempt  # Capture for error handler closure
     result <- tryCatch({
-      utils::download.file(url, destfile, mode = "wb", quiet = quiet)
-      return(TRUE)
+      # Try libcurl first for better HTTPS/redirect support
+      method <- if (capabilities("libcurl")) "libcurl" else "auto"
+      # Capture warnings to detect SSL issues
+      suppressWarnings({
+        warnings_list <- withCallingHandlers(
+          utils::download.file(url, destfile, mode = "wb", quiet = quiet, method = method),
+          warning = function(w) {
+            ssl_warnings <<- c(ssl_warnings, conditionMessage(w))
+            invokeRestart("muffleWarning")
+          }
+        )
+      })
+      TRUE  # Success
     }, error = function(e) {
-      if (attempt < max_attempts) {
-        wait_time <- 2^attempt  # Exponential backoff: 2, 4, 8 seconds
+      # Check for SSL issues in either error message or captured warnings
+      has_ssl_issue <- grepl("SSL|certificate", e$message, ignore.case = TRUE) ||
+                      any(grepl("SSL|certificate", ssl_warnings, ignore.case = TRUE))
+
+      # If SSL error detected and wget not yet tried, try wget with --no-check-certificate
+      if (has_ssl_issue && !wget_tried) {
+        wget_tried <<- TRUE  # Mark wget as tried (use <<- for parent scope)
+        if (!quiet) message("SSL certificate issue detected, trying wget fallback...")
+        wget_result <- tryCatch({
+          utils::download.file(url, destfile, mode = "wb", quiet = quiet,
+                             method = "wget", extra = "--no-check-certificate")
+          TRUE  # wget succeeded
+        }, error = function(e2) {
+          NULL  # wget failed, continue to retry logic
+        })
+        if (!is.null(wget_result) && wget_result) {
+          return(TRUE)  # wget succeeded, return success
+        }
+      }
+
+      # Normal retry logic
+      if (current_attempt < max_attempts) {
+        wait_time <- 2^current_attempt  # Exponential backoff: 2, 4, 8 seconds
         if (!quiet) {
           message(sprintf("Download attempt %d failed. Retrying in %d seconds...",
-                         attempt, wait_time))
+                         current_attempt, wait_time))
         }
         Sys.sleep(wait_time)
-        return(NULL)
+        NULL  # Signal to retry
       } else {
         if (!quiet) {
           warning(sprintf("Failed to download %s after %d attempts: %s",
                          url, max_attempts, e$message))
         }
-        return(FALSE)
+        FALSE  # Final failure
       }
     })
 
-    if (!is.null(result)) {
-      return(result)
+    if (!is.null(result) && result) {
+      return(TRUE)
+    } else if (!is.null(result) && !result) {
+      return(FALSE)
     }
+    # if result is NULL, continue to next attempt
   }
 
   return(FALSE)

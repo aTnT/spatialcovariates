@@ -37,8 +37,8 @@ The simplest workflow uses `getBiasCovariates()` to download and stack all envir
 ```r
 library(spatialcovariates)
 
-# Define region of interest (Mexico example)
-mexico_bbox <- c(xmin = -118, ymin = 14, xmax = -86, ymax = 33)
+# Define region of interest (example within Mexico)
+mexico_bbox <- c(xmin = -101, ymin = 20.5, xmax = -100.5, ymax = 21)
 
 # Fetch all covariates at 10km resolution
 covariates <- getBiasCovariates(

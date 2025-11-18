@@ -19,11 +19,12 @@ download_ifl <- function(output_folder = "data/IFL",
   ensure_directory(output_folder)
 
   # IFL data URLs by year
+  # Source: https://intactforests.org/data.ifl.html
   ifl_urls <- list(
-    "2000" = "https://intactforests.org/data/ifl_2000.zip",
-    "2013" = "https://intactforests.org/data/ifl_2013.zip",
-    "2016" = "https://intactforests.org/data/ifl_2016.zip",
-    "2020" = "https://intactforests.org/data/ifl_2020.zip"
+    "2000" = "http://www.intactforests.org/shp/IFL_2000.zip",
+    "2013" = "http://www.intactforests.org/shp/IFL_2013.zip",
+    "2016" = "http://www.intactforests.org/shp/IFL_2016.zip",
+    "2020" = "http://www.intactforests.org/shp/IFL_2020.zip"
   )
 
   year_str <- as.character(year)
@@ -105,6 +106,8 @@ process_ifl <- function(shp_file, extent, resolution = "10km", outdir = NULL) {
   # Crop to extent for efficiency
   extent_sf <- sf::st_as_sfc(sf::st_bbox(bbox, crs = 4326))
 
+  # Disable S2 to handle invalid geometries in source data
+  sf::sf_use_s2(FALSE)
   tryCatch({
     ifl <- sf::st_crop(ifl, extent_sf)
   }, error = function(e) {
@@ -112,6 +115,7 @@ process_ifl <- function(shp_file, extent, resolution = "10km", outdir = NULL) {
     message("st_crop failed, trying st_intersection...")
     ifl <- sf::st_intersection(ifl, extent_sf)
   })
+  sf::sf_use_s2(TRUE)  # Re-enable S2
 
   if (nrow(ifl) == 0) {
     warning("No intact forest landscapes found within the specified extent. Returning empty raster.")

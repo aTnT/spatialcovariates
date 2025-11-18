@@ -19,7 +19,8 @@ test_that("Dinerstein biomes downloads and processes correctly", {
 
   expect_s4_class(result, "SpatRaster")
   expect_true(terra::ncell(result) > 0)
-  expect_equal(terra::crs(result), "EPSG:4326")
+  # Check CRS is WGS84 (compare by EPSG code, not full WKT string)
+  expect_true(grepl("WGS 84|4326", terra::crs(result, describe = TRUE)$name))
 
   # Check we got valid biome values (1-14)
   values <- terra::values(result, na.rm = TRUE)
@@ -80,6 +81,7 @@ test_that("SRTM terrain computes slope and aspect correctly", {
 test_that("IFL downloads and processes correctly", {
   skip_on_cran()
   skip_on_ci()
+  skip("Manual test - IFL downloads ~206MB shapefile (may take 5-10 min on slow networks)")
 
   result <- getIFL(
     extent = test_bbox,

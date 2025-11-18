@@ -197,8 +197,9 @@ download_esacci_biomass <- function(roi = NULL,
   if (n_cores > 1) {
     cl <- parallel::makeCluster(n_cores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
+    # Export internal functions from package namespace to cluster workers
     parallel::clusterExport(cl, c("download_with_retry", "verify_download"),
-                          envir = environment())
+                          envir = asNamespace("spatialcovariates"))
     downloaded_files <- pbapply::pblapply(available_files, download_single, cl = cl)
   } else {
     downloaded_files <- pbapply::pblapply(available_files, download_single)
