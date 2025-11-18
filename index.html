@@ -167,9 +167,9 @@
 <tr class="even">
 <td><strong>Tree Cover</strong></td>
 <td><code><a href="reference/getSextonTreeCover.html">getSextonTreeCover()</a></code></td>
-<td>UMD GLCF</td>
+<td>Hansen GFC</td>
 <td>30m</td>
-<td>2010, 2015</td>
+<td>2000</td>
 </tr>
 <tr class="odd">
 <td><strong>Slope &amp; Aspect</strong></td>
@@ -236,10 +236,9 @@
 <h3 id="tree-cover-percentage">Tree Cover Percentage<a class="anchor" aria-label="anchor" href="#tree-cover-percentage"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fetch Sexton tree cover for 2015</span></span>
+<code class="sourceCode R"><span><span class="co"># Fetch Hansen GFC tree cover (year 2000 baseline)</span></span>
 <span><span class="va">treecover</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getSextonTreeCover.html">getSextonTreeCover</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
-<span>  year <span class="op">=</span> <span class="fl">2015</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -362,9 +361,10 @@
 <p>Dinerstein, E., Olson, D., Joshi, A., et al. (2017). An ecoregion-based approach to protecting half the terrestrial realm. <em>BioScience</em>, 67(6), 534-545. <a href="https://doi.org/10.1093/biosci/bix014" class="external-link uri">https://doi.org/10.1093/biosci/bix014</a></p>
 </div>
 <div class="section level3">
-<h3 id="sexton-tree-cover">Sexton Tree Cover<a class="anchor" aria-label="anchor" href="#sexton-tree-cover"></a>
+<h3 id="hansen-global-forest-change-tree-cover">Hansen Global Forest Change (Tree Cover)<a class="anchor" aria-label="anchor" href="#hansen-global-forest-change-tree-cover"></a>
 </h3>
-<p>Sexton, J. O., Song, X. P., Feng, M., et al. (2013). Global, 30-m resolution continuous fields of tree cover: Landsat-based rescaling of MODIS vegetation continuous fields with lidar-based estimates of error. <em>International Journal of Digital Earth</em>, 6(5), 427-448. <a href="https://doi.org/10.1080/17538947.2013.786146" class="external-link uri">https://doi.org/10.1080/17538947.2013.786146</a></p>
+<p>Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A., … &amp; Townshend, J. R. G. (2013). High-resolution global maps of 21st-century forest cover change. <em>Science</em>, 342(6160), 850-853. <a href="https://doi.org/10.1126/science.1244693" class="external-link uri">https://doi.org/10.1126/science.1244693</a></p>
+<p><strong>Note</strong>: This dataset replaced the previous Sexton et al. data due to UMD GLCF FTP server discontinuation. Hansen GFC provides comparable tree cover estimates and is actively maintained on Google Cloud Storage.</p>
 </div>
 <div class="section level3">
 <h3 id="srtm-dem">SRTM DEM<a class="anchor" aria-label="anchor" href="#srtm-dem"></a>
@@ -409,9 +409,9 @@
 <td>Static</td>
 </tr>
 <tr class="even">
-<td>Sexton Tree Cover</td>
-<td>2010, 2015</td>
-<td>Uses 2010 if year ≤ 2010, else 2015</td>
+<td>Hansen Tree Cover</td>
+<td>2000</td>
+<td>Static (year parameter deprecated)</td>
 </tr>
 <tr class="odd">
 <td>SRTM Terrain</td>

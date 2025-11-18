@@ -57,6 +57,17 @@
 <li>Unit tests with testthat framework</li>
 <li>MIT license for broad compatibility</li>
 </ul></div>
+<div class="section level3">
+<h3 id="data-source-changes-0-1-0">Data Source Changes<a class="anchor" aria-label="anchor" href="#data-source-changes-0-1-0"></a></h3>
+<ul><li>
+<strong>Tree Cover</strong>: <code><a href="../reference/getSextonTreeCover.html">getSextonTreeCover()</a></code> now uses Hansen et al. (2013) Global Forest Change data instead of Sexton et al. data due to UMD GLCF FTP server discontinuation.
+<ul><li>Data source: Google Cloud Storage (Hansen GFC v1.11)</li>
+<li>Year: 2000 baseline (year parameter deprecated)</li>
+<li>The Hansen dataset provides comparable tree cover estimates and is actively maintained</li>
+<li>Function name retained for backward compatibility</li>
+<li>See Hansen et al. (2013) “High-Resolution Global Maps of 21st-Century Forest Cover Change” - Science 342(6160): 850-853</li>
+</ul></li>
+</ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

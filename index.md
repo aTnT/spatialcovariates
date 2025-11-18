@@ -83,7 +83,7 @@ bias_model <- extractBiasCovariates(
 | **AGB & SD**       | [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md)             | ESA CCI Biomass          | 100m       | 2010, 2017-2022        |
 | **Forest Height**  | [`getPotapovHeight()`](https://atnt.github.io/spatialcovariates/reference/getPotapovHeight.md)     | GLAD/Potapov et al.      | 30m        | ~2019                  |
 | **Biomes**         | [`getDinersteinBiome()`](https://atnt.github.io/spatialcovariates/reference/getDinersteinBiome.md) | RESOLVE Ecoregions       | Vector     | 2017 (static)          |
-| **Tree Cover**     | [`getSextonTreeCover()`](https://atnt.github.io/spatialcovariates/reference/getSextonTreeCover.md) | UMD GLCF                 | 30m        | 2010, 2015             |
+| **Tree Cover**     | [`getSextonTreeCover()`](https://atnt.github.io/spatialcovariates/reference/getSextonTreeCover.md) | Hansen GFC               | 30m        | 2000                   |
 | **Slope & Aspect** | [`getSRTMTerrain()`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md)         | SRTM v4.1                | 90m        | Static                 |
 | **Intact Forests** | [`getIFL()`](https://atnt.github.io/spatialcovariates/reference/getIFL.md)                         | Intact Forest Landscapes | Vector     | 2000, 2013, 2016, 2020 |
 
@@ -133,10 +133,9 @@ plot(biomes, main = "RESOLVE Biomes")
 ### Tree Cover Percentage
 
 ``` r
-# Fetch Sexton tree cover for 2015
+# Fetch Hansen GFC tree cover (year 2000 baseline)
 treecover <- getSextonTreeCover(
   extent = mexico_bbox,
-  year = 2015,
   resolution = "10km"
 )
 
@@ -265,13 +264,16 @@ Dinerstein, E., Olson, D., Joshi, A., et al. (2017). An ecoregion-based
 approach to protecting half the terrestrial realm. *BioScience*, 67(6),
 534-545. <https://doi.org/10.1093/biosci/bix014>
 
-### Sexton Tree Cover
+### Hansen Global Forest Change (Tree Cover)
 
-Sexton, J. O., Song, X. P., Feng, M., et al. (2013). Global, 30-m
-resolution continuous fields of tree cover: Landsat-based rescaling of
-MODIS vegetation continuous fields with lidar-based estimates of error.
-*International Journal of Digital Earth*, 6(5), 427-448.
-<https://doi.org/10.1080/17538947.2013.786146>
+Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S.
+A., Tyukavina, A., … & Townshend, J. R. G. (2013). High-resolution
+global maps of 21st-century forest cover change. *Science*, 342(6160),
+850-853. <https://doi.org/10.1126/science.1244693>
+
+**Note**: This dataset replaced the previous Sexton et al. data due to
+UMD GLCF FTP server discontinuation. Hansen GFC provides comparable tree
+cover estimates and is actively maintained on Google Cloud Storage.
 
 ### SRTM DEM
 
@@ -296,7 +298,7 @@ mismatches as follows:
 | ESA CCI AGB       | 2010, 2017-2022        | Uses specified year if available, otherwise 2010 |
 | Potapov Height    | ~2019                  | Static (represents 2019 conditions)              |
 | Dinerstein Biomes | 2017                   | Static                                           |
-| Sexton Tree Cover | 2010, 2015             | Uses 2010 if year ≤ 2010, else 2015              |
+| Hansen Tree Cover | 2000                   | Static (year parameter deprecated)               |
 | SRTM Terrain      | Static                 | No temporal variation                            |
 | IFL               | 2000, 2013, 2016, 2020 | Uses closest available year                      |
 
