@@ -1,7 +1,6 @@
 # spatialcovariates
 
 <!-- badges: start -->
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![R-CMD-check](https://github.com/aTnT/spatialcovariates/workflows/R-CMD-check/badge.svg)](https://github.com/aTnT/spatialcovariates/actions)
 <!-- badges: end -->
 
@@ -16,8 +15,6 @@
 - **Reproducible pipelines**: Standardized spatial processing (crop, resample, aggregate)
 - **Parallel downloads**: Speed up data acquisition with multi-core support
 - **Smart caching**: Avoid redundant downloads with local file management
-- **No API keys required**: All data from public sources
-- **CRAN-ready**: Fully documented with comprehensive testing
 
 ## Installation
 
@@ -396,44 +393,3 @@ agb <- getESACCIAGB(extent = large_bbox, resolution = "25km")
 height <- getPotapovHeight(extent = large_bbox, resolution = "25km")
 ```
 
-### Data Source Changes
-
-If a data source URL changes:
-1. Check package updates: `devtools::install_github("aTnT/spatialcovariates")`
-2. Report issue: https://github.com/aTnT/spatialcovariates/issues
-
-## Contributing
-
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure `R CMD check` passes
-5. Submit a pull request
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## Citation
-
-If you use this package in your research, please cite:
-
-```
-spatialcovariates: Automated Covariate Fetching for Plot2Map Bias Modeling.
-R package version 0.1.0. https://github.com/aTnT/spatialcovariates
-```
-
-And cite the original data sources (see Data Sources section above).
-
-## Support
-
-- Documentation: `?spatialcovariates`
-- Bug reports: https://github.com/aTnT/spatialcovariates/issues
-- Questions: Open a GitHub discussion
-
-## Related Packages
-
-- [Plot2Map](https://github.com/aTnT/Plot2Map): Forest biomass mapping and validation
-- [terra](https://github.com/rspatial/terra): Spatial data analysis
-- [sf](https://github.com/r-spatial/sf): Simple features for R

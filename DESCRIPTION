@@ -3,7 +3,8 @@ Type: Package
 Title: Automated Covariate Fetching for Plot2Map Bias Modeling
 Version: 0.1.0
 Authors@R: c(
-    person("Plot2Map", "Developers", email = "plot2map@example.com", role = c("aut", "cre"))
+    person("André", "Tavares", email = "andre@skylabanalytics.com", role = c("aut", "cre"),
+           comment = c(GitHub = "aTnT"))
     )
 Description: Provides automated functions to fetch, process, and stack environmental
     covariates commonly used in Plot2Map workflows for bias modeling and uncertainty
