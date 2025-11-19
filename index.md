@@ -19,8 +19,6 @@ and uncertainty quantification in forest biomass mapping.
   support
 - **Smart caching**: Avoid redundant downloads with local file
   management
-- **No API keys required**: All data from public sources
-- **CRAN-ready**: Fully documented with comprehensive testing
 
 ## Installation
 
@@ -438,44 +436,3 @@ covariates <- getBiasCovariates(
 agb <- getESACCIAGB(extent = large_bbox, resolution = "25km")
 height <- getPotapovHeight(extent = large_bbox, resolution = "25km")
 ```
-
-### Data Source Changes
-
-If a data source URL changes: 1. Check package updates:
-`devtools::install_github("aTnT/spatialcovariates")` 2. Report issue:
-<https://github.com/aTnT/spatialcovariates/issues>
-
-## Contributing
-
-Contributions are welcome! Please: 1. Fork the repository 2. Create a
-feature branch 3. Add tests for new functionality 4. Ensure
-`R CMD check` passes 5. Submit a pull request
-
-## License
-
-MIT License - see
-[LICENSE](https://atnt.github.io/spatialcovariates/LICENSE) file for
-details.
-
-## Citation
-
-If you use this package in your research, please cite:
-
-    spatialcovariates: Automated Covariate Fetching for Plot2Map Bias Modeling.
-    R package version 0.1.0. https://github.com/aTnT/spatialcovariates
-
-And cite the original data sources (see Data Sources section above).
-
-## Support
-
-- Documentation:
-  [`?spatialcovariates`](https://atnt.github.io/spatialcovariates/reference/spatialcovariates-package.md)
-- Bug reports: <https://github.com/aTnT/spatialcovariates/issues>
-- Questions: Open a GitHub discussion
-
-## Related Packages
-
-- [Plot2Map](https://github.com/aTnT/Plot2Map): Forest biomass mapping
-  and validation
-- [terra](https://github.com/rspatial/terra): Spatial data analysis
-- [sf](https://github.com/r-spatial/sf): Simple features for R
