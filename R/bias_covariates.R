@@ -22,7 +22,8 @@
 #' @param include_height Logical, include ETH Canopy Height 2020 (requires rgee). Default: FALSE
 #' @param include_biome Logical, include Dinerstein biomes. Default: TRUE
 #' @param include_treecover Logical, include Hansen GFC tree cover. Default: TRUE
-#' @param include_terrain Logical, include SRTM terrain metrics (elevation, slope, aspect, TRI, TPI, roughness). Default: TRUE
+#' @param include_terrain Logical, include SRTM terrain metrics (elevation, slope, aspect, TRI, TPI, roughness).
+#'  Default: TRUE
 #' @param include_ghm Logical, include Global Human Modification Index (requires rgee). Default: FALSE
 #' @param include_ifl Logical, include Intact Forest Landscapes. Default: TRUE
 #' @param gee_scale Numeric, scale for GEE exports (used for include_height and include_ghm). Default: 30
