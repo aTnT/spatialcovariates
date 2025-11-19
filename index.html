@@ -103,10 +103,10 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View the stack</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">covariates</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">covariates</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">covariates</span><span class="op">)</span></span>
-<span><span class="co"># [1] "agb"       "height"    "biome"     "treecover"</span></span>
-<span><span class="co"># [5] "slope"     "aspect"    "ifl"</span></span></code></pre></div>
+<span><span class="co"># [1] "agb"          "tcc2010"      "biome"        "treecover2000"</span></span>
+<span><span class="co"># [5] "slope"        "aspect"       "ifl"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="integration-with-plot2map">Integration with Plot2Map<a class="anchor" aria-label="anchor" href="#integration-with-plot2map"></a>
@@ -115,12 +115,23 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Plot2Map</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Prepare covariate list (excluding AGB which is passed separately)</span></span>
+<span><span class="va">covariate_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  tcc2010 <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="st">"tcc2010"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  biome <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="st">"biome"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  treecover2000 <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="st">"treecover2000"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  slope <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="st">"slope"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  aspect <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="st">"aspect"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  ifl <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="st">"ifl"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># Extract bias covariates for your plot data</span></span>
-<span><span class="va">bias_model</span> <span class="op">&lt;-</span> <span class="fu">extractBiasCovariates</span><span class="op">(</span></span>
+<span><span class="co"># Note: Assumes plot_data has columns: x, y, plotAGB_10, mapAGB</span></span>
+<span><span class="va">bias_data</span> <span class="op">&lt;-</span> <span class="fu">extractBiasCovariates</span><span class="op">(</span></span>
 <span>  plot_data <span class="op">=</span> <span class="va">my_field_plots</span>,</span>
-<span>  map_agb_raster <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="st">"agb"</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>  covariate_rasters <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"height"</span>, <span class="st">"biome"</span>, <span class="st">"treecover"</span>,</span>
-<span>                                    <span class="st">"slope"</span>, <span class="st">"aspect"</span>, <span class="st">"ifl"</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
+<span>  map_agb <span class="op">=</span> <span class="va">covariates</span><span class="op">[[</span><span class="st">"agb"</span><span class="op">]</span><span class="op">]</span>,  <span class="co"># AGB map raster</span></span>
+<span>  map_sd <span class="op">=</span> <span class="cn">NULL</span>,                   <span class="co"># Optional: standard deviation raster</span></span>
+<span>  covariates <span class="op">=</span> <span class="va">covariate_list</span>      <span class="co"># List of covariate rasters</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -151,34 +162,41 @@
 <td>2010, 2017-2022</td>
 </tr>
 <tr class="even">
-<td><strong>Forest Height</strong></td>
-<td><code><a href="reference/getPotapovHeight.html">getPotapovHeight()</a></code></td>
-<td>GLAD/Potapov et al.</td>
+<td><strong>Tree Canopy Cover 2010</strong></td>
+<td><code><a href="reference/getGLADTCC2010.html">getGLADTCC2010()</a></code></td>
+<td>GLAD TCC 2010</td>
 <td>30m</td>
-<td>~2019</td>
+<td>2010 (static)</td>
 </tr>
 <tr class="odd">
+<td><strong>Canopy Height 2020</strong></td>
+<td><code><a href="reference/getETHCanopyHeight.html">getETHCanopyHeight()</a></code></td>
+<td>ETH Global Canopy Height</td>
+<td>10m</td>
+<td>2020 (static)</td>
+</tr>
+<tr class="even">
 <td><strong>Biomes</strong></td>
 <td><code><a href="reference/getDinersteinBiome.html">getDinersteinBiome()</a></code></td>
 <td>RESOLVE Ecoregions</td>
 <td>Vector</td>
 <td>2017 (static)</td>
 </tr>
-<tr class="even">
-<td><strong>Tree Cover</strong></td>
-<td><code><a href="reference/getSextonTreeCover.html">getSextonTreeCover()</a></code></td>
+<tr class="odd">
+<td><strong>Tree Cover 2000</strong></td>
+<td><code><a href="reference/getHansenGFC.html">getHansenGFC()</a></code></td>
 <td>Hansen GFC</td>
 <td>30m</td>
-<td>2000</td>
+<td>2000 (static)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><strong>Slope &amp; Aspect</strong></td>
 <td><code><a href="reference/getSRTMTerrain.html">getSRTMTerrain()</a></code></td>
 <td>SRTM v4.1</td>
 <td>90m</td>
 <td>Static</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Intact Forests</strong></td>
 <td><code><a href="reference/getIFL.html">getIFL()</a></code></td>
 <td>Intact Forest Landscapes</td>
@@ -208,21 +226,41 @@
 <span><span class="va">sd</span> <span class="op">&lt;-</span> <span class="va">biomass</span><span class="op">$</span><span class="va">sd</span>      <span class="co"># Standard deviation (Mg/ha)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="forest-canopy-height">Forest Canopy Height<a class="anchor" aria-label="anchor" href="#forest-canopy-height"></a>
+<h3 id="tree-canopy-cover-2010-glad">Tree Canopy Cover 2010 (GLAD)<a class="anchor" aria-label="anchor" href="#tree-canopy-cover-2010-glad"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fetch Potapov height data</span></span>
-<span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getPotapovHeight.html">getPotapovHeight</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Fetch GLAD TCC 2010 data</span></span>
+<span><span class="va">tcc</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getGLADTCC2010.html">getGLADTCC2010</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">height</span>, main <span class="op">=</span> <span class="st">"Forest Canopy Height (m)"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tcc</span>, main <span class="op">=</span> <span class="st">"Tree Canopy Cover 2010 (%)"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="canopy-height-2020-eth-via-google-earth-engine">Canopy Height 2020 (ETH via Google Earth Engine)<a class="anchor" aria-label="anchor" href="#canopy-height-2020-eth-via-google-earth-engine"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/rgee/" class="external-link">rgee</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Initialize Earth Engine (first time setup)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/rgee/reference/ee_Initialize.html" class="external-link">ee_Initialize</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Fetch ETH Canopy Height 2020</span></span>
+<span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getETHCanopyHeight.html">getETHCanopyHeight</a></span><span class="op">(</span></span>
+<span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="st">"10km"</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">30</span>  <span class="co"># Use 30m scale for faster processing</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">height</span>, main <span class="op">=</span> <span class="st">"Canopy Height 2020 (m)"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Requirements</strong>: - Install rgee: <code>install.packages("rgee")</code> - Set up Google Earth Engine account: <a href="https://earthengine.google.com/signup/" class="external-link uri">https://earthengine.google.com/signup/</a> - Initialize rgee: <code><a href="https://r-spatial.github.io/rgee/reference/ee_Initialize.html" class="external-link">rgee::ee_Initialize()</a></code></p>
+<p><strong>Note</strong>: For large regions, use <code>scale = 100</code> or higher to reduce processing time. Native 10m resolution may cause memory issues for very large extents.</p>
 </div>
 <div class="section level3">
 <h3 id="biome-classification">Biome Classification<a class="anchor" aria-label="anchor" href="#biome-classification"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch RESOLVE Ecoregions biomes</span></span>
 <span><span class="va">biomes</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getDinersteinBiome.html">getDinersteinBiome</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
@@ -233,21 +271,21 @@
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">biomes</span>, main <span class="op">=</span> <span class="st">"RESOLVE Biomes"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="tree-cover-percentage">Tree Cover Percentage<a class="anchor" aria-label="anchor" href="#tree-cover-percentage"></a>
+<h3 id="tree-cover-2000-hansen-gfc">Tree Cover 2000 (Hansen GFC)<a class="anchor" aria-label="anchor" href="#tree-cover-2000-hansen-gfc"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch Hansen GFC tree cover (year 2000 baseline)</span></span>
-<span><span class="va">treecover</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getSextonTreeCover.html">getSextonTreeCover</a></span><span class="op">(</span></span>
+<span><span class="va">treecover</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getHansenGFC.html">getHansenGFC</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">treecover</span>, main <span class="op">=</span> <span class="st">"Tree Cover (%)"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">treecover</span>, main <span class="op">=</span> <span class="st">"Tree Cover 2000 (%)"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="terrain-slope-and-aspect">Terrain (Slope and Aspect)<a class="anchor" aria-label="anchor" href="#terrain-slope-and-aspect"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch SRTM terrain derivatives</span></span>
 <span><span class="va">terrain</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getSRTMTerrain.html">getSRTMTerrain</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
@@ -261,7 +299,7 @@
 <div class="section level3">
 <h3 id="intact-forest-landscapes">Intact Forest Landscapes<a class="anchor" aria-label="anchor" href="#intact-forest-landscapes"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch IFL 2016</span></span>
 <span><span class="va">ifl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getIFL.html">getIFL</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
@@ -279,8 +317,8 @@
 <h3 id="selective-covariate-fetching">Selective Covariate Fetching<a class="anchor" aria-label="anchor" href="#selective-covariate-fetching"></a>
 </h3>
 <p>Fetch only specific covariates:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fetch only AGB, height, and terrain</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Fetch only AGB, TCC, and terrain</span></span>
 <span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
@@ -294,7 +332,7 @@
 <h3 id="using-existing-downloaded-data">Using Existing Downloaded Data<a class="anchor" aria-label="anchor" href="#using-existing-downloaded-data"></a>
 </h3>
 <p>Avoid re-downloading by using local files:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First download</span></span>
 <span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
@@ -313,7 +351,7 @@
 <h3 id="save-processed-rasters">Save Processed Rasters<a class="anchor" aria-label="anchor" href="#save-processed-rasters"></a>
 </h3>
 <p>Save processed covariates to disk:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
@@ -325,7 +363,7 @@
 <h3 id="custom-spatial-extents">Custom Spatial Extents<a class="anchor" aria-label="anchor" href="#custom-spatial-extents"></a>
 </h3>
 <p>Use different extent formats:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># From sf polygon</span></span>
@@ -351,9 +389,16 @@
 <p>Santoro, M., &amp; Cartus, O. (2023). ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass for the years 2010, 2017, 2018, 2019 and 2020. NERC EDS Centre for Environmental Data Analysis. <a href="https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8" class="external-link uri">https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8</a></p>
 </div>
 <div class="section level3">
-<h3 id="potapov-forest-height">Potapov Forest Height<a class="anchor" aria-label="anchor" href="#potapov-forest-height"></a>
+<h3 id="glad-tree-canopy-cover-2010">GLAD Tree Canopy Cover 2010<a class="anchor" aria-label="anchor" href="#glad-tree-canopy-cover-2010"></a>
 </h3>
-<p>Potapov, P., Li, X., Hernandez-Serna, A., et al. (2021). Mapping global forest canopy height through integration of GEDI and Landsat data. <em>Remote Sensing of Environment</em>, 253, 112165. <a href="https://doi.org/10.1016/j.rse.2020.112165" class="external-link uri">https://doi.org/10.1016/j.rse.2020.112165</a></p>
+<p>Potapov, P., et al. (2011). Quantifying forest cover loss in Democratic Republic of the Congo, 2000-2010, with Landsat ETM+ data. <em>Remote Sensing of Environment</em>, 122, 106-116. <a href="https://doi.org/10.1016/j.rse.2011.08.027" class="external-link uri">https://doi.org/10.1016/j.rse.2011.08.027</a></p>
+<p><strong>Note</strong>: This dataset replaced the previous Potapov Forest Height data due to impractical file sizes (5.7GB per continental tile). GLAD TCC 2010 uses the same 10×10 degree tile system as Hansen GFC with much smaller file sizes (~100-200MB per tile). For actual canopy height data, use ETH Global Canopy Height 2020 (see below).</p>
+</div>
+<div class="section level3">
+<h3 id="eth-global-canopy-height-2020">ETH Global Canopy Height 2020<a class="anchor" aria-label="anchor" href="#eth-global-canopy-height-2020"></a>
+</h3>
+<p>Lang, N., Kalischek, N., Armston, J., Schindler, K., Dubayah, R., &amp; Wegner, J. D. (2023). Global canopy height regression and uncertainty estimation from GEDI LIDAR waveforms with deep ensembles. <em>Remote Sensing of Environment</em>, 268, 112760. <a href="https://doi.org/10.1016/j.rse.2021.112760" class="external-link uri">https://doi.org/10.1016/j.rse.2021.112760</a></p>
+<p><strong>Access</strong>: Google Earth Engine asset <code>users/nlang/ETH_GlobalCanopyHeight_2020_10m_v1</code> <strong>Requirements</strong>: rgee package and Google Earth Engine account (<a href="https://earthengine.google.com/signup/" class="external-link uri">https://earthengine.google.com/signup/</a>)</p>
 </div>
 <div class="section level3">
 <h3 id="resolve-ecoregions-dinerstein-biomes">RESOLVE Ecoregions (Dinerstein Biomes)<a class="anchor" aria-label="anchor" href="#resolve-ecoregions-dinerstein-biomes"></a>
@@ -399,26 +444,31 @@
 <td>Uses specified year if available, otherwise 2010</td>
 </tr>
 <tr class="even">
-<td>Potapov Height</td>
-<td>~2019</td>
-<td>Static (represents 2019 conditions)</td>
+<td>GLAD TCC 2010</td>
+<td>2010</td>
+<td>Static (year 2010 tree canopy cover)</td>
 </tr>
 <tr class="odd">
+<td>ETH Canopy Height 2020</td>
+<td>2020</td>
+<td>Static (year 2020 canopy height, requires rgee)</td>
+</tr>
+<tr class="even">
 <td>Dinerstein Biomes</td>
 <td>2017</td>
 <td>Static</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Hansen Tree Cover</td>
 <td>2000</td>
-<td>Static (year parameter deprecated)</td>
+<td>Static (year 2000 baseline)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>SRTM Terrain</td>
 <td>Static</td>
 <td>No temporal variation</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>IFL</td>
 <td>2000, 2013, 2016, 2020</td>
 <td>Uses closest available year</td>
@@ -438,7 +488,7 @@
 <h3 id="download-failures">Download Failures<a class="anchor" aria-label="anchor" href="#download-failures"></a>
 </h3>
 <p>If downloads fail due to network issues:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Increase timeout</span></span>
 <span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">bbox</span>,</span>
@@ -449,7 +499,7 @@
 <h3 id="memory-issues-with-large-extents">Memory Issues with Large Extents<a class="anchor" aria-label="anchor" href="#memory-issues-with-large-extents"></a>
 </h3>
 <p>For very large regions at fine resolution:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use coarser resolution</span></span>
 <span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">large_bbox</span>,</span>
@@ -458,7 +508,7 @@
 <span></span>
 <span><span class="co"># Or fetch covariates separately</span></span>
 <span><span class="va">agb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">large_bbox</span>, resolution <span class="op">=</span> <span class="st">"25km"</span><span class="op">)</span></span>
-<span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getPotapovHeight.html">getPotapovHeight</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">large_bbox</span>, resolution <span class="op">=</span> <span class="st">"25km"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">height</span> <span class="op">&lt;-</span> <span class="fu">getPotapovHeight</span><span class="op">(</span>extent <span class="op">=</span> <span class="va">large_bbox</span>, resolution <span class="op">=</span> <span class="st">"25km"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="data-source-changes">Data Source Changes<a class="anchor" aria-label="anchor" href="#data-source-changes"></a>

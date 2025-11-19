@@ -8,11 +8,13 @@
   : Fetch RESOLVE Ecoregions Biomes (Dinerstein et al., 2017)
 - [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md)
   : Fetch ESA CCI Biomass AGB and SD maps
+- [`getETHCanopyHeight()`](https://atnt.github.io/spatialcovariates/reference/getETHCanopyHeight.md)
+  : Fetch ETH Global Canopy Height 2020 via Google Earth Engine
+- [`getGLADTCC2010()`](https://atnt.github.io/spatialcovariates/reference/getGLADTCC2010.md)
+  : Fetch GLAD Tree Cover 2010 data
+- [`getHansenGFC()`](https://atnt.github.io/spatialcovariates/reference/getHansenGFC.md)
+  : Fetch Hansen Global Forest Change Tree Cover 2000
 - [`getIFL()`](https://atnt.github.io/spatialcovariates/reference/getIFL.md)
   : Fetch Intact Forest Landscapes (IFL)
-- [`getPotapovHeight()`](https://atnt.github.io/spatialcovariates/reference/getPotapovHeight.md)
-  : Fetch Global Forest Canopy Height (Potapov et al., 2021)
 - [`getSRTMTerrain()`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md)
   : Fetch SRTM Terrain (Slope and Aspect)
-- [`getSextonTreeCover()`](https://atnt.github.io/spatialcovariates/reference/getSextonTreeCover.md)
-  : Fetch Global Tree Canopy Cover (Sexton et al., 2015)

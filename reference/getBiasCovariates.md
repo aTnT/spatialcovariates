@@ -2,9 +2,8 @@
 
 Orchestrates the fetching and processing of all environmental covariates
 commonly used in Plot2Map workflows for bias modeling and uncertainty
-quantification. Downloads and processes ESA CCI Biomass, Forest Height,
-Biomes, Tree Cover, Terrain (slope/aspect), and Intact Forest
-Landscapes.
+quantification. Downloads and processes ESA CCI Biomass, Tree Canopy
+Cover, Biomes, Terrain (slope/aspect), and Intact Forest Landscapes.
 
 ## Usage
 
@@ -18,11 +17,13 @@ getBiasCovariates(
   data_dir = "data",
   n_cores = 1,
   include_agb = TRUE,
-  include_height = TRUE,
+  include_tcc = TRUE,
+  include_height = FALSE,
   include_biome = TRUE,
   include_treecover = TRUE,
   include_terrain = TRUE,
-  include_ifl = TRUE
+  include_ifl = TRUE,
+  gee_scale = 30
 )
 ```
 
@@ -64,9 +65,14 @@ getBiasCovariates(
 
   Logical, include ESA CCI AGB data. Default: TRUE
 
+- include_tcc:
+
+  Logical, include GLAD TCC 2010 tree cover data. Default: TRUE
+
 - include_height:
 
-  Logical, include Potapov height data. Default: TRUE
+  Logical, include ETH Canopy Height 2020 (requires rgee). Default:
+  FALSE
 
 - include_biome:
 
@@ -74,7 +80,7 @@ getBiasCovariates(
 
 - include_treecover:
 
-  Logical, include Sexton tree cover. Default: TRUE
+  Logical, include Hansen GFC tree cover. Default: TRUE
 
 - include_terrain:
 
@@ -84,6 +90,11 @@ getBiasCovariates(
 
   Logical, include Intact Forest Landscapes. Default: TRUE
 
+- gee_scale:
+
+  Numeric, scale for GEE exports (only used if include_height=TRUE).
+  Default: 30
+
 ## Value
 
 SpatRaster stack with named layers:
@@ -92,17 +103,21 @@ SpatRaster stack with named layers:
 
   Aboveground Biomass (Mg/ha) from ESA CCI
 
-- height:
+- tcc2010:
 
-  Forest Canopy Height (m) from Potapov et al.
+  Tree Canopy Cover (percent) from GLAD TCC 2010
+
+- canopy_height:
+
+  Canopy Height (m) from ETH 2020 (if include_height=TRUE)
 
 - biome:
 
   Biome classification (1-14) from RESOLVE Ecoregions
 
-- treecover:
+- treecover2000:
 
-  Percent Tree Cover (0-100) from Sexton et al.
+  Percent Tree Cover (0-100) from Hansen GFC 2000
 
 - slope:
 
@@ -124,27 +139,32 @@ Not all datasets have data for all years. The function uses the
 following logic:
 
 \- \*\*ESA CCI AGB\*\*: Available for 2010, 2017-2022. Uses specified
-year if available, otherwise defaults to 2010. - \*\*Potapov Height\*\*:
-Represents ~2019 conditions regardless of year parameter. -
-\*\*Dinerstein Biomes\*\*: Static dataset (2017), no temporal
-variation. - \*\*Sexton Tree Cover\*\*: Available for 2010 and 2015.
-Uses 2010 if year \<= 2010, otherwise 2015. - \*\*SRTM Terrain\*\*:
-Static DEM, no temporal variation. - \*\*IFL\*\*: Available for 2000,
-2013, 2016, 2020. Uses closest available year.
+year if available, otherwise defaults to 2010. - \*\*GLAD TCC 2010\*\*:
+Static dataset representing year 2010 tree canopy cover. - \*\*ETH
+Canopy Height 2020\*\*: Static dataset representing year 2020 canopy
+height (10m resolution). Requires rgee package and Google Earth Engine
+account. - \*\*Dinerstein Biomes\*\*: Static dataset (2017), no temporal
+variation. - \*\*Hansen GFC Tree Cover\*\*: Uses year 2000 baseline
+regardless of year parameter. - \*\*SRTM Terrain\*\*: Static DEM, no
+temporal variation. - \*\*IFL\*\*: Available for 2000, 2013, 2016, 2020.
+Uses closest available year.
 
 \## Data Sources
 
-All data is downloaded from public sources without requiring API keys: -
-ESA CCI: CEDA Archive - Potapov Height: GLAD/UMD - Dinerstein: RESOLVE
-Ecoregions - Sexton: UMD GLCF - SRTM: CGIAR-CSI - IFL: Intact Forests
+Data is downloaded from public sources. Most do not require API keys: -
+ESA CCI: CEDA Archive - GLAD TCC 2010: GLAD/UMD - ETH Canopy Height
+2020: Google Earth Engine (requires rgee + GEE account) - Dinerstein:
+RESOLVE Ecoregions - Hansen GFC: Google Cloud Storage - SRTM:
+CGIAR-CSI - IFL: Intact Forests
 
 ## References
 
 See individual function documentation for detailed references:
 [`getESACCIAGB`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md),
-[`getPotapovHeight`](https://atnt.github.io/spatialcovariates/reference/getPotapovHeight.md),
+[`getGLADTCC2010`](https://atnt.github.io/spatialcovariates/reference/getGLADTCC2010.md),
+[`getETHCanopyHeight`](https://atnt.github.io/spatialcovariates/reference/getETHCanopyHeight.md),
 [`getDinersteinBiome`](https://atnt.github.io/spatialcovariates/reference/getDinersteinBiome.md),
-[`getSextonTreeCover`](https://atnt.github.io/spatialcovariates/reference/getSextonTreeCover.md),
+[`getHansenGFC`](https://atnt.github.io/spatialcovariates/reference/getHansenGFC.md),
 [`getSRTMTerrain`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md),
 [`getIFL`](https://atnt.github.io/spatialcovariates/reference/getIFL.md)
 

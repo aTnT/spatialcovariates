@@ -25,17 +25,21 @@ The package exports the following main user-facing functions:
 
   Fetch ESA CCI Biomass AGB and SD maps
 
-- [`getPotapovHeight`](https://atnt.github.io/spatialcovariates/reference/getPotapovHeight.md):
+- [`getGLADTCC2010`](https://atnt.github.io/spatialcovariates/reference/getGLADTCC2010.md):
 
-  Fetch Global Forest Canopy Height
+  Fetch GLAD Tree Canopy Cover 2010
+
+- [`getETHCanopyHeight`](https://atnt.github.io/spatialcovariates/reference/getETHCanopyHeight.md):
+
+  Fetch ETH Global Canopy Height 2020 (requires rgee)
 
 - [`getDinersteinBiome`](https://atnt.github.io/spatialcovariates/reference/getDinersteinBiome.md):
 
   Fetch RESOLVE Ecoregions biomes
 
-- [`getSextonTreeCover`](https://atnt.github.io/spatialcovariates/reference/getSextonTreeCover.md):
+- [`getHansenGFC`](https://atnt.github.io/spatialcovariates/reference/getHansenGFC.md):
 
-  Fetch Global Tree Canopy Cover
+  Fetch Hansen Global Forest Change Tree Cover 2000
 
 - [`getSRTMTerrain`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md):
 
@@ -83,11 +87,7 @@ The simplest way to use the package is with
 
 Useful links:
 
-- <https://github.com/aTnT/spatialcovariates>
-
-- Report bugs at <https://github.com/aTnT/spatialcovariates/issues>
-
-Useful links:
+- <https://atnt.github.io/spatialcovariates/>
 
 - <https://github.com/aTnT/spatialcovariates>
 

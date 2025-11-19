@@ -8,12 +8,10 @@
 - Core covariate fetching functions:
   - [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md):
     Fetch ESA CCI Biomass AGB and SD maps
-  - [`getPotapovHeight()`](https://atnt.github.io/spatialcovariates/reference/getPotapovHeight.md):
-    Fetch Global Forest Canopy Height data
+  - `getPotapovHeight()`: Fetch Global Forest Canopy Height data
   - [`getDinersteinBiome()`](https://atnt.github.io/spatialcovariates/reference/getDinersteinBiome.md):
     Fetch and rasterize RESOLVE Ecoregions biomes
-  - [`getSextonTreeCover()`](https://atnt.github.io/spatialcovariates/reference/getSextonTreeCover.md):
-    Fetch Global Tree Canopy Cover data
+  - `getSextonTreeCover()`: Fetch Global Tree Canopy Cover data
   - [`getSRTMTerrain()`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md):
     Fetch SRTM DEM and compute slope/aspect
   - [`getIFL()`](https://atnt.github.io/spatialcovariates/reference/getIFL.md):
@@ -28,10 +26,9 @@
 
 ### Data Source Changes
 
-- **Tree Cover**:
-  [`getSextonTreeCover()`](https://atnt.github.io/spatialcovariates/reference/getSextonTreeCover.md)
-  now uses Hansen et al. (2013) Global Forest Change data instead of
-  Sexton et al. data due to UMD GLCF FTP server discontinuation.
+- **Tree Cover**: `getSextonTreeCover()` now uses Hansen et al. (2013)
+  Global Forest Change data instead of Sexton et al. data due to UMD
+  GLCF FTP server discontinuation.
   - Data source: Google Cloud Storage (Hansen GFC v1.11)
   - Year: 2000 baseline (year parameter deprecated)
   - The Hansen dataset provides comparable tree cover estimates and is
