@@ -78,19 +78,27 @@ download_srtm_dem <- function(roi = NULL,
 
   message(sprintf("Attempting to download %d SRTM DEM tile(s)...", length(tile_names)))
 
-  download_single <- function(tile_name) {
+  # Check which files already exist
+  tif_files <- file.path(output_folder, paste0(tile_names, ".tif"))
+  existing_files <- file.exists(tif_files)
+
+  if (any(existing_files)) {
+    message(sprintf("%d file(s) already exist - skipping download", sum(existing_files)))
+  }
+
+  download_single <- function(i) {
+    tile_name <- tile_names[i]
     file_url <- paste0(base_url, tile_name, ".zip")
     zip_file <- file.path(output_folder, paste0(tile_name, ".zip"))
-    tif_file <- file.path(output_folder, paste0(tile_name, ".tif"))
+    tif_file <- tif_files[i]
 
-    # Skip if TIF already exists
+    # Skip if TIF already exists (checked earlier, but double-check)
     if (file.exists(tif_file)) {
-      message(sprintf("File %s already exists - skipping", basename(tif_file)))
       return(tif_file)
     }
 
     # Download zip
-    success <- download_with_retry(file_url, zip_file, timeout = timeout, quiet = FALSE)
+    success <- download_with_retry(file_url, zip_file, timeout = timeout, quiet = TRUE)
 
     if (!success) {
       warning(sprintf("Failed to download %s", tile_name))
@@ -115,15 +123,17 @@ download_srtm_dem <- function(roi = NULL,
   }
 
   # Download files
-  if (n_cores > 1) {
+  if (n_cores > 1 && sum(!existing_files) > 1) {
     cl <- parallel::makeCluster(n_cores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
-    # Export internal functions to cluster workers
+    # Export variables to cluster workers
+    parallel::clusterExport(cl, c("tile_names", "tif_files", "base_url", "output_folder", "timeout"),
+                          envir = environment())
     parallel::clusterExport(cl, "download_with_retry",
                           envir = asNamespace("spatialcovariates"))
-    downloaded_files <- pbapply::pblapply(tile_names, download_single, cl = cl)
+    downloaded_files <- pbapply::pblapply(seq_along(tile_names), download_single, cl = cl)
   } else {
-    downloaded_files <- pbapply::pblapply(tile_names, download_single)
+    downloaded_files <- pbapply::pblapply(seq_along(tile_names), download_single)
   }
 
   downloaded_files <- unlist(downloaded_files)

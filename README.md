@@ -49,10 +49,10 @@ covariates <- getBiasCovariates(
 )
 
 # View the stack
-plot(covariates)
+terra::plot(covariates)
 names(covariates)
-# [1] "agb"       "height"    "biome"     "treecover"
-# [5] "slope"     "aspect"    "ifl"
+# [1] "agb"          "tcc2010"      "biome"        "treecover2000"
+# [5] "slope"        "aspect"       "ifl"
 ```
 
 ### Integration with Plot2Map
@@ -62,12 +62,23 @@ Use the fetched covariates directly in Plot2Map workflows:
 ```r
 library(Plot2Map)
 
+# Prepare covariate list (excluding AGB which is passed separately)
+covariate_list <- list(
+  tcc2010 = covariates[["tcc2010"]],
+  biome = covariates[["biome"]],
+  treecover2000 = covariates[["treecover2000"]],
+  slope = covariates[["slope"]],
+  aspect = covariates[["aspect"]],
+  ifl = covariates[["ifl"]]
+)
+
 # Extract bias covariates for your plot data
-bias_model <- extractBiasCovariates(
+# Note: Assumes plot_data has columns: x, y, plotAGB_10, mapAGB
+bias_data <- extractBiasCovariates(
   plot_data = my_field_plots,
-  map_agb_raster = covariates[["agb"]],
-  covariate_rasters = covariates[[c("height", "biome", "treecover",
-                                    "slope", "aspect", "ifl")]]
+  map_agb = covariates[["agb"]],  # AGB map raster
+  map_sd = NULL,                   # Optional: standard deviation raster
+  covariates = covariate_list      # List of covariate rasters
 )
 ```
 
@@ -76,9 +87,10 @@ bias_model <- extractBiasCovariates(
 | Covariate | Function | Source | Resolution | Years |
 |-----------|----------|--------|------------|-------|
 | **AGB & SD** | `getESACCIAGB()` | ESA CCI Biomass | 100m | 2010, 2017-2022 |
-| **Forest Height** | `getPotapovHeight()` | GLAD/Potapov et al. | 30m | ~2019 |
+| **Tree Canopy Cover 2010** | `getGLADTCC2010()` | GLAD TCC 2010 | 30m | 2010 (static) |
+| **Canopy Height 2020** | `getETHCanopyHeight()` | ETH Global Canopy Height | 10m | 2020 (static) |
 | **Biomes** | `getDinersteinBiome()` | RESOLVE Ecoregions | Vector | 2017 (static) |
-| **Tree Cover** | `getSextonTreeCover()` | Hansen GFC | 30m | 2000 |
+| **Tree Cover 2000** | `getHansenGFC()` | Hansen GFC | 30m | 2000 (static) |
 | **Slope & Aspect** | `getSRTMTerrain()` | SRTM v4.1 | 90m | Static |
 | **Intact Forests** | `getIFL()` | Intact Forest Landscapes | Vector | 2000, 2013, 2016, 2020 |
 
@@ -100,17 +112,42 @@ agb <- biomass$agb    # Aboveground biomass (Mg/ha)
 sd <- biomass$sd      # Standard deviation (Mg/ha)
 ```
 
-### Forest Canopy Height
+### Tree Canopy Cover 2010 (GLAD)
 
 ```r
-# Fetch Potapov height data
-height <- getPotapovHeight(
+# Fetch GLAD TCC 2010 data
+tcc <- getGLADTCC2010(
   extent = mexico_bbox,
   resolution = "10km"
 )
 
-plot(height, main = "Forest Canopy Height (m)")
+plot(tcc, main = "Tree Canopy Cover 2010 (%)")
 ```
+
+### Canopy Height 2020 (ETH via Google Earth Engine)
+
+```r
+library(rgee)
+
+# Initialize Earth Engine (first time setup)
+ee_Initialize()
+
+# Fetch ETH Canopy Height 2020
+height <- getETHCanopyHeight(
+  extent = mexico_bbox,
+  resolution = "10km",
+  scale = 30  # Use 30m scale for faster processing
+)
+
+plot(height, main = "Canopy Height 2020 (m)")
+```
+
+**Requirements**:
+- Install rgee: `install.packages("rgee")`
+- Set up Google Earth Engine account: https://earthengine.google.com/signup/
+- Initialize rgee: `rgee::ee_Initialize()`
+
+**Note**: For large regions, use `scale = 100` or higher to reduce processing time. Native 10m resolution may cause memory issues for very large extents.
 
 ### Biome Classification
 
@@ -125,16 +162,16 @@ biomes <- getDinersteinBiome(
 plot(biomes, main = "RESOLVE Biomes")
 ```
 
-### Tree Cover Percentage
+### Tree Cover 2000 (Hansen GFC)
 
 ```r
 # Fetch Hansen GFC tree cover (year 2000 baseline)
-treecover <- getSextonTreeCover(
+treecover <- getHansenGFC(
   extent = mexico_bbox,
   resolution = "10km"
 )
 
-plot(treecover, main = "Tree Cover (%)")
+plot(treecover, main = "Tree Cover 2000 (%)")
 ```
 
 ### Terrain (Slope and Aspect)
@@ -171,7 +208,7 @@ plot(ifl, main = "Intact Forest Landscapes (1 = intact)")
 Fetch only specific covariates:
 
 ```r
-# Fetch only AGB, height, and terrain
+# Fetch only AGB, TCC, and terrain
 covariates <- getBiasCovariates(
   extent = mexico_bbox,
   year = 2010,
@@ -241,8 +278,16 @@ covariates <- getBiasCovariates(extent = bbox)
 ### ESA CCI Biomass
 Santoro, M., & Cartus, O. (2023). ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass for the years 2010, 2017, 2018, 2019 and 2020. NERC EDS Centre for Environmental Data Analysis. https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8
 
-### Potapov Forest Height
-Potapov, P., Li, X., Hernandez-Serna, A., et al. (2021). Mapping global forest canopy height through integration of GEDI and Landsat data. *Remote Sensing of Environment*, 253, 112165. https://doi.org/10.1016/j.rse.2020.112165
+### GLAD Tree Canopy Cover 2010
+Potapov, P., et al. (2011). Quantifying forest cover loss in Democratic Republic of the Congo, 2000-2010, with Landsat ETM+ data. *Remote Sensing of Environment*, 122, 106-116. https://doi.org/10.1016/j.rse.2011.08.027
+
+**Note**: This dataset replaced the previous Potapov Forest Height data due to impractical file sizes (5.7GB per continental tile). GLAD TCC 2010 uses the same 10×10 degree tile system as Hansen GFC with much smaller file sizes (~100-200MB per tile). For actual canopy height data, use ETH Global Canopy Height 2020 (see below).
+
+### ETH Global Canopy Height 2020
+Lang, N., Kalischek, N., Armston, J., Schindler, K., Dubayah, R., & Wegner, J. D. (2023). Global canopy height regression and uncertainty estimation from GEDI LIDAR waveforms with deep ensembles. *Remote Sensing of Environment*, 268, 112760. https://doi.org/10.1016/j.rse.2021.112760
+
+**Access**: Google Earth Engine asset `users/nlang/ETH_GlobalCanopyHeight_2020_10m_v1`
+**Requirements**: rgee package and Google Earth Engine account (https://earthengine.google.com/signup/)
 
 ### RESOLVE Ecoregions (Dinerstein Biomes)
 Dinerstein, E., Olson, D., Joshi, A., et al. (2017). An ecoregion-based approach to protecting half the terrestrial realm. *BioScience*, 67(6), 534-545. https://doi.org/10.1093/biosci/bix014
@@ -265,9 +310,10 @@ Not all datasets cover all years. The package handles temporal mismatches as fol
 | Dataset | Available Years | Logic |
 |---------|----------------|-------|
 | ESA CCI AGB | 2010, 2017-2022 | Uses specified year if available, otherwise 2010 |
-| Potapov Height | ~2019 | Static (represents 2019 conditions) |
+| GLAD TCC 2010 | 2010 | Static (year 2010 tree canopy cover) |
+| ETH Canopy Height 2020 | 2020 | Static (year 2020 canopy height, requires rgee) |
 | Dinerstein Biomes | 2017 | Static |
-| Hansen Tree Cover | 2000 | Static (year parameter deprecated) |
+| Hansen Tree Cover | 2000 | Static (year 2000 baseline) |
 | SRTM Terrain | Static | No temporal variation |
 | IFL | 2000, 2013, 2016, 2020 | Uses closest available year |
 

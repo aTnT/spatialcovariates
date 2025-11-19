@@ -98,6 +98,61 @@ test_that("IFL downloads and processes correctly", {
   expect_true(all(ifl_vals %in% c(0, 1)))
 })
 
+test_that("GLAD TCC 2010 downloads and processes correctly", {
+  skip_on_cran()
+  skip_on_ci()
+  skip("Manual test - downloads ~222MB GLAD TCC tile")
+
+  result <- getGLADTCC2010(
+    extent = test_bbox,
+    resolution = "10km",
+    download = TRUE,
+    tiles_dir = file.path(tempdir(), "GLAD_TCC"),
+    n_cores = 1
+  )
+
+  expect_s4_class(result, "SpatRaster")
+
+  # TCC should be 0-100% tree cover
+  tcc_vals <- terra::values(result, na.rm = TRUE)
+  expect_true(all(tcc_vals >= 0 & tcc_vals <= 100))
+})
+
+test_that("Hansen GFC downloads and processes correctly", {
+  skip_on_cran()
+  skip_on_ci()
+  skip("Manual test - downloads Hansen GFC tile (~300MB)")
+
+  result <- getHansenGFC(
+    extent = test_bbox,
+    resolution = "10km",
+    download = TRUE,
+    tiles_dir = file.path(tempdir(), "HANSEN_TC"),
+    n_cores = 1
+  )
+
+  expect_s4_class(result, "SpatRaster")
+
+  # Tree cover should be 0-100%
+  tc_vals <- terra::values(result, na.rm = TRUE)
+  expect_true(all(tc_vals >= 0 & tc_vals <= 100))
+})
+
+test_that("ETH Canopy Height returns error without rgee", {
+  skip_on_cran()
+  skip_on_ci()
+
+  # This should fail gracefully if rgee not installed
+  if (!requireNamespace("rgee", quietly = TRUE)) {
+    expect_error(
+      getETHCanopyHeight(extent = test_bbox, resolution = "10km"),
+      "rgee"
+    )
+  } else {
+    skip("rgee is installed - skipping error test")
+  }
+})
+
 test_that("Full getBiasCovariates integration works", {
   skip_on_cran()
   skip_on_ci()
@@ -113,9 +168,10 @@ test_that("Full getBiasCovariates integration works", {
     n_cores = 2,
     # Test with subset to save time
     include_agb = FALSE,  # Skip large downloads
-    include_height = FALSE,
+    include_tcc = FALSE,  # Skip GLAD TCC
+    include_height = FALSE,  # Skip ETH (requires rgee)
     include_biome = TRUE,
-    include_treecover = FALSE,
+    include_treecover = FALSE,  # Skip Hansen GFC
     include_terrain = TRUE,
     include_ifl = TRUE
   )
@@ -183,7 +239,7 @@ test_that("Error handling works for invalid inputs", {
     "Invalid version"
   )
 
-  # Note: getSextonTreeCover with invalid year warns but doesn't error,
+  # Note: getHansenGFC with invalid year warns but doesn't error,
   # and then attempts download. Testing this requires network access,
   # so it's tested in the manual integration tests instead.
 })

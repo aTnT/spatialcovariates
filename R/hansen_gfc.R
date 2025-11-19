@@ -1,9 +1,6 @@
-# Tree Cover Functions (Hansen Global Forest Change)
-#
-# Note: This file previously used Sexton et al. data from UMD GLCF FTP server,
-# which is no longer available. It has been replaced with Hansen et al. (2013)
-# Global Forest Change data, which provides comparable tree cover estimates
-# and is actively maintained on Google Cloud Storage.
+# Hansen Global Forest Change Tree Cover 2000 Functions
+# Hansen GFC provides 30m resolution tree cover for year 2000 baseline
+# Data is hosted on Google Cloud Storage and uses 10x10 degree tiles
 
 #' Generate Hansen GFC tile names for a region
 #'
@@ -95,14 +92,21 @@ download_hansen_treecover <- function(roi = NULL,
   message(sprintf("Attempting to download %d Hansen GFC tree cover tile(s)...",
                  length(tile_names)))
 
+  # Check which files already exist
+  local_paths <- file.path(output_folder, sprintf("Hansen_treecover2000_%s.tif", tile_names))
+  existing_files <- file.exists(local_paths)
+
+  if (any(existing_files)) {
+    message(sprintf("%d file(s) already exist - skipping download", sum(existing_files)))
+  }
+
   download_single <- function(i) {
     file_url <- file_urls[i]
     tile_name <- tile_names[i]
-    local_path <- file.path(output_folder, sprintf("Hansen_treecover2000_%s.tif", tile_name))
+    local_path <- local_paths[i]
 
-    # Skip if exists
+    # Skip if exists (checked earlier, but double-check)
     if (file.exists(local_path)) {
-      message(sprintf("File %s already exists - skipping", basename(local_path)))
       return(local_path)
     }
 
@@ -118,12 +122,10 @@ download_hansen_treecover <- function(roi = NULL,
       if (httr::status_code(response) == 200) {
         TRUE
       } else {
-        warning(sprintf("Failed to download %s: HTTP %d", file_url, httr::status_code(response)))
         if (file.exists(local_path)) file.remove(local_path)
         FALSE
       }
     }, error = function(e) {
-      warning(sprintf("Failed to download %s: %s", file_url, e$message))
       if (file.exists(local_path)) file.remove(local_path)
       FALSE
     })
@@ -136,12 +138,12 @@ download_hansen_treecover <- function(roi = NULL,
   }
 
   # Download files
-  if (n_cores > 1) {
+  if (n_cores > 1 && sum(!existing_files) > 1) {
     cl <- parallel::makeCluster(n_cores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
-    # Export internal functions to cluster workers
-    parallel::clusterExport(cl, "download_with_retry",
-                          envir = asNamespace("spatialcovariates"))
+    # Export variables to cluster workers
+    parallel::clusterExport(cl, c("file_urls", "tile_names", "local_paths", "timeout"),
+                          envir = environment())
     downloaded_files <- pbapply::pblapply(seq_along(tile_names), download_single, cl = cl)
   } else {
     downloaded_files <- pbapply::pblapply(seq_along(tile_names), download_single)
@@ -244,14 +246,10 @@ process_hansen_treecover <- function(files, extent, resolution = "10km", outdir 
   return(treecover)
 }
 
-#' Fetch Global Tree Canopy Cover (Hansen et al., 2013)
+#' Fetch Hansen Global Forest Change Tree Cover 2000
 #'
-#' Downloads and processes Global Forest Change tree cover data at 30m resolution
+#' Downloads and processes Hansen Global Forest Change tree cover data at 30m resolution
 #' (year 2000 baseline) and aggregates to target resolution.
-#'
-#' This function replaces the previous Sexton et al. data source due to UMD GLCF
-#' FTP server discontinuation. Hansen et al. (2013) provides comparable tree cover
-#' estimates and is actively maintained on Google Cloud Storage.
 #'
 #' @param extent sf object, SpatVector, or numeric bbox vector (xmin, ymin, xmax, ymax)
 #'   specifying the region of interest
@@ -274,9 +272,9 @@ process_hansen_treecover <- function(files, extent, resolution = "10km", outdir 
 #' # Define extent for a region
 #' bbox <- c(xmin = -75, ymin = -10, xmax = -70, ymax = -5)
 #'
-#' # Fetch tree cover data
-#' treecover <- getSextonTreeCover(bbox, resolution = "10km")
-#' plot(treecover, main = "Tree Cover (%)")
+#' # Fetch Hansen GFC tree cover data
+#' treecover <- getHansenGFC(bbox, resolution = "10km")
+#' plot(treecover, main = "Tree Cover 2000 (%)")
 #' }
 #'
 #' @references
@@ -284,12 +282,7 @@ process_hansen_treecover <- function(files, extent, resolution = "10km", outdir 
 #' Tyukavina, A., ... & Townshend, J. R. G. (2013). High-resolution global maps
 #' of 21st-century forest cover change. Science, 342(6160), 850-853.
 #' \doi{10.1126/science.1244693}
-#'
-#' @note This function was previously named after Sexton et al. data but now uses
-#' Hansen et al. Global Forest Change data. The function name is retained for
-#' backward compatibility. The year parameter is deprecated as Hansen GFC uses
-#' a year 2000 baseline.
-getSextonTreeCover <- function(extent,
+getHansenGFC <- function(extent,
                               year = 2000,
                               resolution = "10km",
                               outdir = NULL,

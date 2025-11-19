@@ -29,7 +29,8 @@ Imports:
 Suggests:
     testthat (>= 3.2.0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    rgee
 RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 URL: https://atnt.github.io/spatialcovariates/, https://github.com/aTnT/spatialcovariates

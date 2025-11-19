@@ -45,7 +45,7 @@ download_ifl <- function(output_folder = "data/IFL",
 
   # Download zip file
   message(sprintf("Downloading IFL %d shapefile from %s...", year, zip_url))
-  success <- download_with_retry(zip_url, zip_file, timeout = timeout, quiet = FALSE)
+  success <- download_with_retry(zip_url, zip_file, timeout = timeout, quiet = TRUE)
 
   if (!success) {
     stop(sprintf("Failed to download IFL shapefile from %s", zip_url))
@@ -129,6 +129,7 @@ process_ifl <- function(shp_file, extent, resolution = "10km", outdir = NULL) {
       crs = "EPSG:4326"
     )
     template[] <- 0  # Fill with zeros (no IFL)
+    names(template) <- "ifl"
     return(template)
   }
 
@@ -156,6 +157,9 @@ process_ifl <- function(shp_file, extent, resolution = "10km", outdir = NULL) {
   # Crop to exact extent
   extent_vect <- terra::ext(bbox[1], bbox[3], bbox[2], bbox[4])
   ifl_rast <- terra::crop(ifl_rast, extent_vect)
+
+  # Set layer name
+  names(ifl_rast) <- "ifl"
 
   # Save if outdir specified
   if (!is.null(outdir)) {

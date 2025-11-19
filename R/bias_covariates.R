@@ -4,8 +4,8 @@
 #'
 #' Orchestrates the fetching and processing of all environmental covariates
 #' commonly used in Plot2Map workflows for bias modeling and uncertainty
-#' quantification. Downloads and processes ESA CCI Biomass, Forest Height,
-#' Biomes, Tree Cover, Terrain (slope/aspect), and Intact Forest Landscapes.
+#' quantification. Downloads and processes ESA CCI Biomass, Tree Canopy Cover,
+#' Biomes, Terrain (slope/aspect), and Intact Forest Landscapes.
 #'
 #' @param extent sf object, SpatVector, or numeric bbox vector (xmin, ymin, xmax, ymax)
 #'   specifying the region of interest
@@ -18,22 +18,25 @@
 #' @param data_dir Character, base directory for all data storage. Default: "data"
 #' @param n_cores Integer, number of cores for parallel downloads. Default: 1
 #' @param include_agb Logical, include ESA CCI AGB data. Default: TRUE
-#' @param include_height Logical, include Potapov height data. Default: TRUE
+#' @param include_tcc Logical, include GLAD TCC 2010 tree cover data. Default: TRUE
+#' @param include_height Logical, include ETH Canopy Height 2020 (requires rgee). Default: FALSE
 #' @param include_biome Logical, include Dinerstein biomes. Default: TRUE
-#' @param include_treecover Logical, include Sexton tree cover. Default: TRUE
+#' @param include_treecover Logical, include Hansen GFC tree cover. Default: TRUE
 #' @param include_terrain Logical, include SRTM terrain (slope/aspect). Default: TRUE
 #' @param include_ifl Logical, include Intact Forest Landscapes. Default: TRUE
+#' @param gee_scale Numeric, scale for GEE exports (only used if include_height=TRUE). Default: 30
 #'
 #' @return SpatRaster stack with named layers:
-#'   \describe{
-#'     \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
-#'     \item{height}{Forest Canopy Height (m) from Potapov et al.}
-#'     \item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
-#'     \item{treecover}{Percent Tree Cover (0-100) from Sexton et al.}
-#'     \item{slope}{Slope (degrees) from SRTM}
-#'     \item{aspect}{Aspect (degrees, 0-360) from SRTM}
-#'     \item{ifl}{Intact Forest Landscape binary (0/1)}
-#'   }
+#' \describe{
+#'   \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
+#'   \item{tcc2010}{Tree Canopy Cover (percent) from GLAD TCC 2010}
+#'   \item{canopy_height}{Canopy Height (m) from ETH 2020 (if include_height=TRUE)}
+#'   \item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
+#'   \item{treecover2000}{Percent Tree Cover (0-100) from Hansen GFC 2000}
+#'   \item{slope}{Slope (degrees) from SRTM}
+#'   \item{aspect}{Aspect (degrees, 0-360) from SRTM}
+#'   \item{ifl}{Intact Forest Landscape binary (0/1)}
+#' }
 #'
 #' @details
 #' ## Temporal Coverage
@@ -42,20 +45,22 @@
 #'
 #' - **ESA CCI AGB**: Available for 2010, 2017-2022. Uses specified year if available,
 #'   otherwise defaults to 2010.
-#' - **Potapov Height**: Represents ~2019 conditions regardless of year parameter.
+#' - **GLAD TCC 2010**: Static dataset representing year 2010 tree canopy cover.
+#' - **ETH Canopy Height 2020**: Static dataset representing year 2020 canopy height (10m resolution).
+#'   Requires rgee package and Google Earth Engine account.
 #' - **Dinerstein Biomes**: Static dataset (2017), no temporal variation.
-#' - **Sexton Tree Cover**: Available for 2010 and 2015. Uses 2010 if year <= 2010,
-#'   otherwise 2015.
+#' - **Hansen GFC Tree Cover**: Uses year 2000 baseline regardless of year parameter.
 #' - **SRTM Terrain**: Static DEM, no temporal variation.
 #' - **IFL**: Available for 2000, 2013, 2016, 2020. Uses closest available year.
 #'
 #' ## Data Sources
 #'
-#' All data is downloaded from public sources without requiring API keys:
+#' Data is downloaded from public sources. Most do not require API keys:
 #' - ESA CCI: CEDA Archive
-#' - Potapov Height: GLAD/UMD
+#' - GLAD TCC 2010: GLAD/UMD
+#' - ETH Canopy Height 2020: Google Earth Engine (requires rgee + GEE account)
 #' - Dinerstein: RESOLVE Ecoregions
-#' - Sexton: UMD GLCF
+#' - Hansen GFC: Google Cloud Storage
 #' - SRTM: CGIAR-CSI
 #' - IFL: Intact Forests
 #'
@@ -95,8 +100,8 @@
 #'
 #' @references
 #' See individual function documentation for detailed references:
-#' \code{\link{getESACCIAGB}}, \code{\link{getPotapovHeight}},
-#' \code{\link{getDinersteinBiome}}, \code{\link{getSextonTreeCover}},
+#' \code{\link{getESACCIAGB}}, \code{\link{getGLADTCC2010}}, \code{\link{getETHCanopyHeight}},
+#' \code{\link{getDinersteinBiome}}, \code{\link{getHansenGFC}},
 #' \code{\link{getSRTMTerrain}}, \code{\link{getIFL}}
 getBiasCovariates <- function(extent,
                              year = 2010,
@@ -106,11 +111,13 @@ getBiasCovariates <- function(extent,
                              data_dir = "data",
                              n_cores = 1,
                              include_agb = TRUE,
-                             include_height = TRUE,
+                             include_tcc = TRUE,
+                             include_height = FALSE,
                              include_biome = TRUE,
                              include_treecover = TRUE,
                              include_terrain = TRUE,
-                             include_ifl = TRUE) {
+                             include_ifl = TRUE,
+                             gee_scale = 30) {
 
   # Validate inputs
   bbox <- validate_extent(extent)
@@ -137,6 +144,7 @@ getBiasCovariates <- function(extent,
         n_cores = n_cores
       )
       if (!is.null(esa$agb)) {
+        names(esa$agb) <- "agb"
         covariates_list$agb <- esa$agb
       }
       # Note: SD is available but not included in main stack by default
@@ -145,26 +153,47 @@ getBiasCovariates <- function(extent,
     })
   }
 
-  # 2. Potapov Forest Height
-  if (include_height) {
-    message("\n=== Fetching Potapov Forest Height ===")
+  # 2. GLAD TCC 2010
+  if (include_tcc) {
+    message("\n=== Fetching GLAD TCC 2010 ===")
     tryCatch({
-      height <- getPotapovHeight(
+      tcc <- getGLADTCC2010(
         extent = extent,
         year = year,
         resolution = resolution,
         outdir = outdir,
         download = download,
-        tiles_dir = file.path(data_dir, "POTAPOV_HEIGHT"),
+        tiles_dir = file.path(data_dir, "GLAD_TCC_2010"),
         n_cores = n_cores
       )
-      covariates_list$height <- height
+      names(tcc) <- "tcc2010"
+      covariates_list$tcc2010 <- tcc
     }, error = function(e) {
-      warning(sprintf("Failed to fetch Potapov height: %s", e$message))
+      warning(sprintf("Failed to fetch GLAD TCC 2010: %s", e$message))
     })
   }
 
-  # 3. Dinerstein Biomes
+  # 3. ETH Canopy Height 2020 (optional - requires rgee)
+  if (include_height) {
+    message("\n=== Fetching ETH Canopy Height 2020 (Google Earth Engine) ===")
+    tryCatch({
+      height <- getETHCanopyHeight(
+        extent = extent,
+        resolution = resolution,
+        outdir = outdir,
+        scale = gee_scale
+      )
+      names(height) <- "canopy_height"
+      covariates_list$canopy_height <- height
+    }, error = function(e) {
+      warning(sprintf("Failed to fetch ETH Canopy Height 2020: %s\n", e$message),
+              "To use ETH height data:\n",
+              "1. Install rgee: install.packages('rgee')\n",
+              "2. Set up Earth Engine: rgee::ee_install() and rgee::ee_Initialize()")
+    })
+  }
+
+  # 4. Dinerstein Biomes
   if (include_biome) {
     message("\n=== Fetching Dinerstein Biomes ===")
     tryCatch({
@@ -175,34 +204,34 @@ getBiasCovariates <- function(extent,
         download = download,
         data_dir = file.path(data_dir, "ECOREGIONS")
       )
+      names(biome) <- "biome"
       covariates_list$biome <- biome
     }, error = function(e) {
       warning(sprintf("Failed to fetch Dinerstein biomes: %s", e$message))
     })
   }
 
-  # 4. Sexton Tree Cover
+  # 5. Hansen GFC Tree Cover 2000
   if (include_treecover) {
-    message("\n=== Fetching Sexton Tree Cover ===")
-    # Determine which year to use (2010 or 2015)
-    tc_year <- ifelse(year <= 2010, 2010, 2015)
+    message("\n=== Fetching Hansen GFC Tree Cover 2000 ===")
     tryCatch({
-      treecover <- getSextonTreeCover(
+      treecover <- getHansenGFC(
         extent = extent,
-        year = tc_year,
+        year = 2000,  # Hansen GFC uses 2000 baseline
         resolution = resolution,
         outdir = outdir,
         download = download,
-        tiles_dir = file.path(data_dir, "SEXTON_TCC"),
+        tiles_dir = file.path(data_dir, "HANSEN_TC"),
         n_cores = n_cores
       )
-      covariates_list$treecover <- treecover
+      names(treecover) <- "treecover2000"
+      covariates_list$treecover2000 <- treecover
     }, error = function(e) {
-      warning(sprintf("Failed to fetch Sexton tree cover: %s", e$message))
+      warning(sprintf("Failed to fetch Hansen GFC tree cover: %s", e$message))
     })
   }
 
-  # 5. SRTM Terrain (slope and aspect)
+  # 6. SRTM Terrain (slope and aspect)
   if (include_terrain) {
     message("\n=== Fetching SRTM Terrain (Slope & Aspect) ===")
     tryCatch({
@@ -215,9 +244,11 @@ getBiasCovariates <- function(extent,
         n_cores = n_cores
       )
       if (!is.null(terrain$slope)) {
+        names(terrain$slope) <- "slope"
         covariates_list$slope <- terrain$slope
       }
       if (!is.null(terrain$aspect)) {
+        names(terrain$aspect) <- "aspect"
         covariates_list$aspect <- terrain$aspect
       }
     }, error = function(e) {
@@ -225,7 +256,7 @@ getBiasCovariates <- function(extent,
     })
   }
 
-  # 6. Intact Forest Landscapes
+  # 7. Intact Forest Landscapes
   if (include_ifl) {
     message("\n=== Fetching Intact Forest Landscapes ===")
     # Determine which IFL year to use (2000, 2013, 2016, 2020)
@@ -241,6 +272,7 @@ getBiasCovariates <- function(extent,
         download = download,
         data_dir = file.path(data_dir, "IFL")
       )
+      names(ifl) <- "ifl"
       covariates_list$ifl <- ifl
     }, error = function(e) {
       warning(sprintf("Failed to fetch IFL: %s", e$message))
@@ -268,9 +300,8 @@ getBiasCovariates <- function(extent,
     }
   }
 
-  # Stack all rasters
+  # Stack all rasters (names are already set on individual layers)
   covariate_stack <- terra::rast(covariates_list)
-  names(covariate_stack) <- names(covariates_list)
 
   # Save stack if outdir specified
   if (!is.null(outdir)) {

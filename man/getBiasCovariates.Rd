@@ -13,11 +13,13 @@ getBiasCovariates(
   data_dir = "data",
   n_cores = 1,
   include_agb = TRUE,
-  include_height = TRUE,
+  include_tcc = TRUE,
+  include_height = FALSE,
   include_biome = TRUE,
   include_treecover = TRUE,
   include_terrain = TRUE,
-  include_ifl = TRUE
+  include_ifl = TRUE,
+  gee_scale = 30
 )
 }
 \arguments{
@@ -40,33 +42,38 @@ Default: "10km"}
 
 \item{include_agb}{Logical, include ESA CCI AGB data. Default: TRUE}
 
-\item{include_height}{Logical, include Potapov height data. Default: TRUE}
+\item{include_tcc}{Logical, include GLAD TCC 2010 tree cover data. Default: TRUE}
+
+\item{include_height}{Logical, include ETH Canopy Height 2020 (requires rgee). Default: FALSE}
 
 \item{include_biome}{Logical, include Dinerstein biomes. Default: TRUE}
 
-\item{include_treecover}{Logical, include Sexton tree cover. Default: TRUE}
+\item{include_treecover}{Logical, include Hansen GFC tree cover. Default: TRUE}
 
 \item{include_terrain}{Logical, include SRTM terrain (slope/aspect). Default: TRUE}
 
 \item{include_ifl}{Logical, include Intact Forest Landscapes. Default: TRUE}
+
+\item{gee_scale}{Numeric, scale for GEE exports (only used if include_height=TRUE). Default: 30}
 }
 \value{
 SpatRaster stack with named layers:
-  \describe{
-    \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
-    \item{height}{Forest Canopy Height (m) from Potapov et al.}
-    \item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
-    \item{treecover}{Percent Tree Cover (0-100) from Sexton et al.}
-    \item{slope}{Slope (degrees) from SRTM}
-    \item{aspect}{Aspect (degrees, 0-360) from SRTM}
-    \item{ifl}{Intact Forest Landscape binary (0/1)}
-  }
+\describe{
+  \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
+  \item{tcc2010}{Tree Canopy Cover (percent) from GLAD TCC 2010}
+  \item{canopy_height}{Canopy Height (m) from ETH 2020 (if include_height=TRUE)}
+  \item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
+  \item{treecover2000}{Percent Tree Cover (0-100) from Hansen GFC 2000}
+  \item{slope}{Slope (degrees) from SRTM}
+  \item{aspect}{Aspect (degrees, 0-360) from SRTM}
+  \item{ifl}{Intact Forest Landscape binary (0/1)}
+}
 }
 \description{
 Orchestrates the fetching and processing of all environmental covariates
 commonly used in Plot2Map workflows for bias modeling and uncertainty
-quantification. Downloads and processes ESA CCI Biomass, Forest Height,
-Biomes, Tree Cover, Terrain (slope/aspect), and Intact Forest Landscapes.
+quantification. Downloads and processes ESA CCI Biomass, Tree Canopy Cover,
+Biomes, Terrain (slope/aspect), and Intact Forest Landscapes.
 }
 \details{
 ## Temporal Coverage
@@ -75,20 +82,22 @@ Not all datasets have data for all years. The function uses the following logic:
 
 - **ESA CCI AGB**: Available for 2010, 2017-2022. Uses specified year if available,
   otherwise defaults to 2010.
-- **Potapov Height**: Represents ~2019 conditions regardless of year parameter.
+- **GLAD TCC 2010**: Static dataset representing year 2010 tree canopy cover.
+- **ETH Canopy Height 2020**: Static dataset representing year 2020 canopy height (10m resolution).
+  Requires rgee package and Google Earth Engine account.
 - **Dinerstein Biomes**: Static dataset (2017), no temporal variation.
-- **Sexton Tree Cover**: Available for 2010 and 2015. Uses 2010 if year <= 2010,
-  otherwise 2015.
+- **Hansen GFC Tree Cover**: Uses year 2000 baseline regardless of year parameter.
 - **SRTM Terrain**: Static DEM, no temporal variation.
 - **IFL**: Available for 2000, 2013, 2016, 2020. Uses closest available year.
 
 ## Data Sources
 
-All data is downloaded from public sources without requiring API keys:
+Data is downloaded from public sources. Most do not require API keys:
 - ESA CCI: CEDA Archive
-- Potapov Height: GLAD/UMD
+- GLAD TCC 2010: GLAD/UMD
+- ETH Canopy Height 2020: Google Earth Engine (requires rgee + GEE account)
 - Dinerstein: RESOLVE Ecoregions
-- Sexton: UMD GLCF
+- Hansen GFC: Google Cloud Storage
 - SRTM: CGIAR-CSI
 - IFL: Intact Forests
 }
@@ -127,7 +136,7 @@ bias_model <- extractBiasCovariates(
 }
 \references{
 See individual function documentation for detailed references:
-\code{\link{getESACCIAGB}}, \code{\link{getPotapovHeight}},
-\code{\link{getDinersteinBiome}}, \code{\link{getSextonTreeCover}},
+\code{\link{getESACCIAGB}}, \code{\link{getGLADTCC2010}}, \code{\link{getETHCanopyHeight}},
+\code{\link{getDinersteinBiome}}, \code{\link{getHansenGFC}},
 \code{\link{getSRTMTerrain}}, \code{\link{getIFL}}
 }

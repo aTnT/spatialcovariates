@@ -14,9 +14,10 @@
 #' \describe{
 #'   \item{\code{\link{getBiasCovariates}}}{Fetch and stack all covariates at once (recommended)}
 #'   \item{\code{\link{getESACCIAGB}}}{Fetch ESA CCI Biomass AGB and SD maps}
-#'   \item{\code{\link{getPotapovHeight}}}{Fetch Global Forest Canopy Height}
+#'   \item{\code{\link{getGLADTCC2010}}}{Fetch GLAD Tree Canopy Cover 2010}
+#'   \item{\code{\link{getETHCanopyHeight}}}{Fetch ETH Global Canopy Height 2020 (requires rgee)}
 #'   \item{\code{\link{getDinersteinBiome}}}{Fetch RESOLVE Ecoregions biomes}
-#'   \item{\code{\link{getSextonTreeCover}}}{Fetch Global Tree Canopy Cover}
+#'   \item{\code{\link{getHansenGFC}}}{Fetch Hansen Global Forest Change Tree Cover 2000}
 #'   \item{\code{\link{getSRTMTerrain}}}{Fetch SRTM terrain (slope and aspect)}
 #'   \item{\code{\link{getIFL}}}{Fetch Intact Forest Landscapes}
 #' }
@@ -54,7 +55,6 @@
 #' extractBiasCovariates(plot_data, covariates[["agb"]], covariates[[-1]])
 #' }
 #'
-#' @docType package
 #' @name spatialcovariates-package
 #' @aliases spatialcovariates
 NULL

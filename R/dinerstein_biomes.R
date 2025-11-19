@@ -28,7 +28,7 @@ download_dinerstein_biomes <- function(output_folder = "data/ECOREGIONS",
 
   # Download zip file
   message("Downloading RESOLVE Ecoregions 2017 shapefile...")
-  success <- download_with_retry(zip_url, zip_file, timeout = timeout, quiet = FALSE)
+  success <- download_with_retry(zip_url, zip_file, timeout = timeout, quiet = TRUE)
 
   if (!success) {
     stop("Failed to download Ecoregions shapefile from ", zip_url)
