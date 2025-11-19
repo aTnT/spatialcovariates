@@ -192,28 +192,27 @@ Default: TRUE</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>## Temporal Coverage</p>
 <p>Not all datasets have data for all years. The function uses the following logic:</p>
-<p>- **ESA CCI AGB**: Available for 2010, 2017-2022. Uses specified year if available,
-  otherwise defaults to 2010.
-- **GLAD TCC 2010**: Static dataset representing year 2010 tree canopy cover.
-- **ETH Canopy Height 2020**: Static dataset representing year 2020 canopy height (10m resolution).
-  Requires rgee package and Google Earth Engine account.
-- **Dinerstein Biomes**: Static dataset (2017), no temporal variation.
-- **Hansen GFC Tree Cover**: Uses year 2000 baseline regardless of year parameter.
-- **SRTM Terrain**: Static DEM, no temporal variation. Provides elevation and
-  derived metrics (slope, aspect, TRI, TPI, roughness).
-- **Global Human Modification**: Static dataset (2016), no temporal variation. Requires rgee.
-- **IFL**: Available for 2000, 2013, 2016, 2020. Uses closest available year.</p>
-<p>## Data Sources</p>
-<p>Data is downloaded from public sources. Most do not require API keys:
-- ESA CCI: CEDA Archive
-- GLAD TCC 2010: GLAD/UMD
-- ETH Canopy Height 2020: Google Earth Engine (requires rgee + GEE account)
-- Dinerstein: RESOLVE Ecoregions
-- Hansen GFC: Google Cloud Storage
-- SRTM: CGIAR-CSI
-- gHM: Google Earth Engine (requires rgee + GEE account)
-- IFL: Intact Forests</p>
-    </div>
+<ul><li><p><strong>ESA CCI AGB</strong>: Available for 2010, 2017-2022. Uses specified year if available,
+    otherwise defaults to 2010.</p></li>
+<li><p><strong>GLAD TCC 2010</strong>: Static dataset representing year 2010 tree canopy cover.</p></li>
+<li><p><strong>ETH Canopy Height 2020</strong>: Static dataset representing year 2020 canopy height (10m resolution).
+    Requires rgee package and Google Earth Engine account.</p></li>
+<li><p><strong>Dinerstein Biomes</strong>: Static dataset (2017), no temporal variation.</p></li>
+<li><p><strong>Hansen GFC Tree Cover</strong>: Uses year 2000 baseline regardless of year parameter.</p></li>
+<li><p><strong>SRTM Terrain</strong>: Static DEM, no temporal variation. Provides elevation and
+    derived metrics (slope, aspect, TRI, TPI, roughness).</p></li>
+<li><p><strong>Global Human Modification</strong>: Static dataset (2016), no temporal variation. Requires rgee.</p></li>
+<li><p><strong>IFL</strong>: Available for 2000, 2013, 2016, 2020. Uses closest available year.</p></li>
+</ul><p>## Data Sources</p>
+<p>Data is downloaded from public sources. Most do not require API keys:</p><ul><li><p>ESA CCI: CEDA Archive</p></li>
+<li><p>GLAD TCC 2010: GLAD/UMD</p></li>
+<li><p>ETH Canopy Height 2020: Google Earth Engine (requires rgee + GEE account)</p></li>
+<li><p>Dinerstein: RESOLVE Ecoregions</p></li>
+<li><p>Hansen GFC: Google Cloud Storage</p></li>
+<li><p>SRTM: CGIAR-CSI</p></li>
+<li><p>gHM: Google Earth Engine (requires rgee + GEE account)</p></li>
+<li><p>IFL: Intact Forests</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>See individual function documentation for detailed references:

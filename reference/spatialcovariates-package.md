@@ -100,4 +100,4 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Plot2Map Developers <plot2map@example.com>
+**Maintainer**: André Tavares <andre@skylabanalytics.com> (aTnT)

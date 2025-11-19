@@ -40,16 +40,24 @@ human modification, 1 = Maximum human modification
 
 ## Note
 
-\*\*Requirements\*\*: - Install rgee package:
-\`install.packages("rgee")\` - Set up Google Earth Engine account:
-https://earthengine.google.com/signup/ - Initialize rgee:
-\`rgee::ee_Initialize()\`
+**Requirements**:
 
-\*\*GEE Asset\*\*: \`CSP/HM/GlobalHumanModification\`
+- Install rgee package: `install.packages("rgee")`
 
-\*\*Performance Notes\*\*: - Native 1km resolution is usually fast
-enough for most regions - For very large regions (\>10,000 km²),
-consider using \`scale = 5000\` or higher
+- Set up Google Earth Engine account:
+  https://earthengine.google.com/signup/
+
+- Initialize rgee:
+  [`rgee::ee_Initialize()`](https://r-spatial.github.io/rgee/reference/ee_Initialize.html)
+
+**GEE Asset**: `CSP/HM/GlobalHumanModification`
+
+**Performance Notes**:
+
+- Native 1km resolution is usually fast enough for most regions
+
+- For very large regions (\>10,000 km²), consider using `scale = 5000`
+  or higher
 
 ## References
 

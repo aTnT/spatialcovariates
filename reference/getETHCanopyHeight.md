@@ -37,17 +37,26 @@ SpatRaster object with canopy height in meters for year 2020
 
 ## Note
 
-\*\*Requirements\*\*: - Install rgee package:
-\`install.packages("rgee")\` - Set up Google Earth Engine account:
-https://earthengine.google.com/signup/ - Initialize rgee:
-\`rgee::ee_Initialize()\`
+**Requirements**:
 
-\*\*GEE Asset\*\*: \`users/nlang/ETH_GlobalCanopyHeight_2020_10m_v1\`
+- Install rgee package: `install.packages("rgee")`
 
-\*\*Performance Notes\*\*: - For large regions (\>1000 km²), use \`scale
-= 30\` or higher to reduce processing time - Native 10m resolution may
-cause memory issues for very large extents - Consider processing large
-regions in smaller chunks
+- Set up Google Earth Engine account:
+  https://earthengine.google.com/signup/
+
+- Initialize rgee:
+  [`rgee::ee_Initialize()`](https://r-spatial.github.io/rgee/reference/ee_Initialize.html)
+
+**GEE Asset**: `users/nlang/ETH_GlobalCanopyHeight_2020_10m_v1`
+
+**Performance Notes**:
+
+- For large regions (\>1000 km²), use `scale = 30` or higher to reduce
+  processing time
+
+- Native 10m resolution may cause memory issues for very large extents
+
+- Consider processing large regions in smaller chunks
 
 ## References
 

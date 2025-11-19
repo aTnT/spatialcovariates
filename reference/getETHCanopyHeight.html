@@ -81,16 +81,14 @@ For large areas, use larger scale (e.g., 30, 100) to reduce processing time.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>**Requirements**:
-- Install rgee package: `install.packages("rgee")`
-- Set up Google Earth Engine account: https://earthengine.google.com/signup/
-- Initialize rgee: `rgee::ee_Initialize()`</p>
-<p>**GEE Asset**: `users/nlang/ETH_GlobalCanopyHeight_2020_10m_v1`</p>
-<p>**Performance Notes**:
-- For large regions (&gt;1000 km²), use `scale = 30` or higher to reduce processing time
-- Native 10m resolution may cause memory issues for very large extents
-- Consider processing large regions in smaller chunks</p>
-    </div>
+    <p><strong>Requirements</strong>:</p><ul><li><p>Install rgee package: <code>install.packages("rgee")</code></p></li>
+<li><p>Set up Google Earth Engine account: https://earthengine.google.com/signup/</p></li>
+<li><p>Initialize rgee: <code><a href="https://r-spatial.github.io/rgee/reference/ee_Initialize.html" class="external-link">rgee::ee_Initialize()</a></code></p></li>
+</ul><p><strong>GEE Asset</strong>: <code>users/nlang/ETH_GlobalCanopyHeight_2020_10m_v1</code></p>
+<p><strong>Performance Notes</strong>:</p><ul><li><p>For large regions (&gt;1000 km²), use <code>scale = 30</code> or higher to reduce processing time</p></li>
+<li><p>Native 10m resolution may cause memory issues for very large extents</p></li>
+<li><p>Consider processing large regions in smaller chunks</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Lang, N., Kalischek, N., Armston, J., Schindler, K., Dubayah, R., &amp; Wegner, J. D. (2023).

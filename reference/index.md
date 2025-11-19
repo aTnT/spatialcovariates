@@ -19,4 +19,4 @@
 - [`getIFL()`](https://atnt.github.io/spatialcovariates/reference/getIFL.md)
   : Fetch Intact Forest Landscapes (IFL)
 - [`getSRTMTerrain()`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md)
-  : Fetch SRTM Terrain (Slope and Aspect)
+  : Fetch SRTM Terrain
