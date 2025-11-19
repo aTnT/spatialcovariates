@@ -28,16 +28,20 @@ the cumulative impact of direct human pressures on the environment. Requires
 rgee package and authenticated Google Earth Engine account.
 }
 \note{
-**Requirements**:
-- Install rgee package: `install.packages("rgee")`
-- Set up Google Earth Engine account: https://earthengine.google.com/signup/
-- Initialize rgee: `rgee::ee_Initialize()`
+\strong{Requirements}:
+\itemize{
+  \item Install rgee package: \code{install.packages("rgee")}
+  \item Set up Google Earth Engine account: https://earthengine.google.com/signup/
+  \item Initialize rgee: \code{rgee::ee_Initialize()}
+}
 
-**GEE Asset**: `CSP/HM/GlobalHumanModification`
+\strong{GEE Asset}: \code{CSP/HM/GlobalHumanModification}
 
-**Performance Notes**:
-- Native 1km resolution is usually fast enough for most regions
-- For very large regions (>10,000 km²), consider using `scale = 5000` or higher
+\strong{Performance Notes}:
+\itemize{
+  \item Native 1km resolution is usually fast enough for most regions
+  \item For very large regions (>10,000 km²), consider using \code{scale = 5000} or higher
+}
 }
 \examples{
 \dontrun{

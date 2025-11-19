@@ -26,17 +26,21 @@ via Google Earth Engine and aggregates to target resolution. Requires rgee
 package and authenticated Google Earth Engine account.
 }
 \note{
-**Requirements**:
-- Install rgee package: `install.packages("rgee")`
-- Set up Google Earth Engine account: https://earthengine.google.com/signup/
-- Initialize rgee: `rgee::ee_Initialize()`
+\strong{Requirements}:
+\itemize{
+  \item Install rgee package: \code{install.packages("rgee")}
+  \item Set up Google Earth Engine account: https://earthengine.google.com/signup/
+  \item Initialize rgee: \code{rgee::ee_Initialize()}
+}
 
-**GEE Asset**: `users/nlang/ETH_GlobalCanopyHeight_2020_10m_v1`
+\strong{GEE Asset}: \code{users/nlang/ETH_GlobalCanopyHeight_2020_10m_v1}
 
-**Performance Notes**:
-- For large regions (>1000 km²), use `scale = 30` or higher to reduce processing time
-- Native 10m resolution may cause memory issues for very large extents
-- Consider processing large regions in smaller chunks
+\strong{Performance Notes}:
+\itemize{
+  \item For large regions (>1000 km²), use \code{scale = 30} or higher to reduce processing time
+  \item Native 10m resolution may cause memory issues for very large extents
+  \item Consider processing large regions in smaller chunks
+}
 }
 \examples{
 \dontrun{

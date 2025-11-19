@@ -2,7 +2,7 @@
 % Please edit documentation in R/srtm_terrain.R
 \name{getSRTMTerrain}
 \alias{getSRTMTerrain}
-\title{Fetch SRTM Terrain (Slope and Aspect)}
+\title{Fetch SRTM Terrain}
 \usage{
 getSRTMTerrain(
   extent,
@@ -40,9 +40,9 @@ Named list with six SpatRaster objects:
 }
 }
 \description{
-Downloads SRTM DEM data and computes terrain derivatives (slope and aspect)
-at the target resolution. Slope is computed as the maximum rate of change
-in elevation. Aspect is the compass direction of the slope (0-360 degrees).
+Downloads SRTM DEM data and computes terrain derivatives such as slope, aspect,
+Terrain Ruggedness Index (TRI), Topographic Position Index (TPI) and roughness 
+at the target resolution.
 }
 \examples{
 \dontrun{

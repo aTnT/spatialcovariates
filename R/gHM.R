@@ -43,16 +43,20 @@
 #' \doi{10.1111/gcb.14549}
 #'
 #' @note
-#' **Requirements**:
-#' - Install rgee package: `install.packages("rgee")`
-#' - Set up Google Earth Engine account: https://earthengine.google.com/signup/
-#' - Initialize rgee: `rgee::ee_Initialize()`
+#' \strong{Requirements}:
+#' \itemize{
+#'   \item Install rgee package: \code{install.packages("rgee")}
+#'   \item Set up Google Earth Engine account: https://earthengine.google.com/signup/
+#'   \item Initialize rgee: \code{rgee::ee_Initialize()}
+#' }
 #'
-#' **GEE Asset**: `CSP/HM/GlobalHumanModification`
+#' \strong{GEE Asset}: \code{CSP/HM/GlobalHumanModification}
 #'
-#' **Performance Notes**:
-#' - Native 1km resolution is usually fast enough for most regions
-#' - For very large regions (>10,000 km²), consider using `scale = 5000` or higher
+#' \strong{Performance Notes}:
+#' \itemize{
+#'   \item Native 1km resolution is usually fast enough for most regions
+#'   \item For very large regions (>10,000 km²), consider using \code{scale = 5000} or higher
+#' }
 getGlobalHumanMod <- function(extent,
                               resolution = "10km",
                               outdir = NULL,

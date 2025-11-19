@@ -50,29 +50,33 @@
 #'
 #' Not all datasets have data for all years. The function uses the following logic:
 #'
-#' - **ESA CCI AGB**: Available for 2010, 2017-2022. Uses specified year if available,
-#'   otherwise defaults to 2010.
-#' - **GLAD TCC 2010**: Static dataset representing year 2010 tree canopy cover.
-#' - **ETH Canopy Height 2020**: Static dataset representing year 2020 canopy height (10m resolution).
-#'   Requires rgee package and Google Earth Engine account.
-#' - **Dinerstein Biomes**: Static dataset (2017), no temporal variation.
-#' - **Hansen GFC Tree Cover**: Uses year 2000 baseline regardless of year parameter.
-#' - **SRTM Terrain**: Static DEM, no temporal variation. Provides elevation and
-#'   derived metrics (slope, aspect, TRI, TPI, roughness).
-#' - **Global Human Modification**: Static dataset (2016), no temporal variation. Requires rgee.
-#' - **IFL**: Available for 2000, 2013, 2016, 2020. Uses closest available year.
+#' \itemize{
+#'   \item \strong{ESA CCI AGB}: Available for 2010, 2017-2022. Uses specified year if available,
+#'     otherwise defaults to 2010.
+#'   \item \strong{GLAD TCC 2010}: Static dataset representing year 2010 tree canopy cover.
+#'   \item \strong{ETH Canopy Height 2020}: Static dataset representing year 2020 canopy height (10m resolution).
+#'     Requires rgee package and Google Earth Engine account.
+#'   \item \strong{Dinerstein Biomes}: Static dataset (2017), no temporal variation.
+#'   \item \strong{Hansen GFC Tree Cover}: Uses year 2000 baseline regardless of year parameter.
+#'   \item \strong{SRTM Terrain}: Static DEM, no temporal variation. Provides elevation and
+#'     derived metrics (slope, aspect, TRI, TPI, roughness).
+#'   \item \strong{Global Human Modification}: Static dataset (2016), no temporal variation. Requires rgee.
+#'   \item \strong{IFL}: Available for 2000, 2013, 2016, 2020. Uses closest available year.
+#' }
 #'
 #' ## Data Sources
 #'
 #' Data is downloaded from public sources. Most do not require API keys:
-#' - ESA CCI: CEDA Archive
-#' - GLAD TCC 2010: GLAD/UMD
-#' - ETH Canopy Height 2020: Google Earth Engine (requires rgee + GEE account)
-#' - Dinerstein: RESOLVE Ecoregions
-#' - Hansen GFC: Google Cloud Storage
-#' - SRTM: CGIAR-CSI
-#' - gHM: Google Earth Engine (requires rgee + GEE account)
-#' - IFL: Intact Forests
+#' \itemize{
+#'   \item ESA CCI: CEDA Archive
+#'   \item GLAD TCC 2010: GLAD/UMD
+#'   \item ETH Canopy Height 2020: Google Earth Engine (requires rgee + GEE account)
+#'   \item Dinerstein: RESOLVE Ecoregions
+#'   \item Hansen GFC: Google Cloud Storage
+#'   \item SRTM: CGIAR-CSI
+#'   \item gHM: Google Earth Engine (requires rgee + GEE account)
+#'   \item IFL: Intact Forests
+#' }
 #'
 #' @export
 #'

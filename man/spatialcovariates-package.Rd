@@ -77,7 +77,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Plot2Map Developers \email{plot2map@example.com}
+\strong{Maintainer}: André Tavares \email{andre@skylabanalytics.com} (aTnT)
 
 }
 \keyword{internal}

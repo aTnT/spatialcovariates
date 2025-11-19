@@ -263,11 +263,11 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
   ))
 }
 
-#' Fetch SRTM Terrain (Slope and Aspect)
+#' Fetch SRTM Terrain
 #'
-#' Downloads SRTM DEM data and computes terrain derivatives (slope and aspect)
-#' at the target resolution. Slope is computed as the maximum rate of change
-#' in elevation. Aspect is the compass direction of the slope (0-360 degrees).
+#' Downloads SRTM DEM data and computes terrain derivatives such as slope, aspect,
+#' Terrain Ruggedness Index (TRI), Topographic Position Index (TPI) and roughness 
+#' at the target resolution.
 #'
 #' @param extent sf object, SpatVector, or numeric bbox vector (xmin, ymin, xmax, ymax)
 #'   specifying the region of interest
