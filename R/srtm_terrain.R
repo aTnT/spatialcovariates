@@ -266,7 +266,7 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
 #' Fetch SRTM Terrain
 #'
 #' Downloads SRTM DEM data and computes terrain derivatives such as slope, aspect,
-#' Terrain Ruggedness Index (TRI), Topographic Position Index (TPI) and roughness 
+#' Terrain Ruggedness Index (TRI), Topographic Position Index (TPI) and roughness
 #' at the target resolution.
 #'
 #' @param extent sf object, SpatVector, or numeric bbox vector (xmin, ymin, xmax, ymax)

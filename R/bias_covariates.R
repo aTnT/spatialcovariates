@@ -46,7 +46,7 @@
 #' }
 #'
 #' @details
-#' ## Temporal Coverage
+#' \strong{Temporal Coverage}
 #'
 #' Not all datasets have data for all years. The function uses the following logic:
 #'
@@ -64,7 +64,7 @@
 #'   \item \strong{IFL}: Available for 2000, 2013, 2016, 2020. Uses closest available year.
 #' }
 #'
-#' ## Data Sources
+#' \strong{Data Sources}
 #'
 #' Data is downloaded from public sources. Most do not require API keys:
 #' \itemize{
