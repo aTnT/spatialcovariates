@@ -51,7 +51,8 @@ Default: "10km"}
 
 \item{include_treecover}{Logical, include Hansen GFC tree cover. Default: TRUE}
 
-\item{include_terrain}{Logical, include SRTM terrain metrics (elevation, slope, aspect, TRI, TPI, roughness). Default: TRUE}
+\item{include_terrain}{Logical, include SRTM terrain metrics (elevation, slope, aspect, TRI, TPI, roughness). 
+Default: TRUE}
 
 \item{include_ghm}{Logical, include Global Human Modification Index (requires rgee). Default: FALSE}
 
