@@ -1,10 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://atnt.github.io/spatialcovariates/404.html</loc></url>
-<url><loc>https://atnt.github.io/spatialcovariates/CI_CD_SUMMARY.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/CONTRIBUTING.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/LICENSE-text.html</loc></url>
-<url><loc>https://atnt.github.io/spatialcovariates/Requirements.html</loc></url>
-<url><loc>https://atnt.github.io/spatialcovariates/TESTING.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/WORKFLOWS.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/authors.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/index.html</loc></url>
@@ -26,6 +23,7 @@
 <url><loc>https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/reference/getETHCanopyHeight.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/reference/getGLADTCC2010.html</loc></url>
+<url><loc>https://atnt.github.io/spatialcovariates/reference/getGlobalHumanMod.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/reference/getHansenGFC.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/reference/getIFL.html</loc></url>
 <url><loc>https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.html</loc></url>

@@ -43,7 +43,12 @@ The package exports the following main user-facing functions:
 
 - [`getSRTMTerrain`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md):
 
-  Fetch SRTM terrain (slope and aspect)
+  Fetch SRTM terrain metrics (elevation, slope, aspect, TRI, TPI,
+  roughness)
+
+- [`getGlobalHumanMod`](https://atnt.github.io/spatialcovariates/reference/getGlobalHumanMod.md):
+
+  Fetch Global Human Modification Index
 
 - [`getIFL`](https://atnt.github.io/spatialcovariates/reference/getIFL.md):
 

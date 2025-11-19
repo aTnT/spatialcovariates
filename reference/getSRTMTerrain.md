@@ -49,7 +49,11 @@ getSRTMTerrain(
 
 ## Value
 
-Named list with two SpatRaster objects:
+Named list with six SpatRaster objects:
+
+- elevation:
+
+  Elevation in meters above sea level
 
 - slope:
 
@@ -58,6 +62,21 @@ Named list with two SpatRaster objects:
 - aspect:
 
   Aspect in degrees (0-360), where 0=North, 90=East, 180=South, 270=West
+
+- tri:
+
+  Terrain Ruggedness Index - mean elevation difference between adjacent
+  cells
+
+- tpi:
+
+  Topographic Position Index - difference from mean elevation of
+  surrounding cells
+
+- roughness:
+
+  Roughness - difference between max and min elevation in 3x3
+  neighborhood
 
 ## References
 
@@ -80,7 +99,13 @@ bbox <- c(xmin = -75, ymin = -10, xmax = -70, ymax = -5)
 
 # Fetch terrain data
 terrain <- getSRTMTerrain(bbox, resolution = "10km")
+
+# Plot individual metrics
+plot(terrain$elevation, main = "Elevation (m)")
 plot(terrain$slope, main = "Slope (degrees)")
 plot(terrain$aspect, main = "Aspect (degrees)")
+plot(terrain$tri, main = "Terrain Ruggedness Index")
+plot(terrain$tpi, main = "Topographic Position Index")
+plot(terrain$roughness, main = "Roughness")
 } # }
 ```

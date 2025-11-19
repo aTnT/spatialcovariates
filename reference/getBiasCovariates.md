@@ -22,6 +22,7 @@ getBiasCovariates(
   include_biome = TRUE,
   include_treecover = TRUE,
   include_terrain = TRUE,
+  include_ghm = FALSE,
   include_ifl = TRUE,
   gee_scale = 30
 )
@@ -84,7 +85,13 @@ getBiasCovariates(
 
 - include_terrain:
 
-  Logical, include SRTM terrain (slope/aspect). Default: TRUE
+  Logical, include SRTM terrain metrics (elevation, slope, aspect, TRI,
+  TPI, roughness). Default: TRUE
+
+- include_ghm:
+
+  Logical, include Global Human Modification Index (requires rgee).
+  Default: FALSE
 
 - include_ifl:
 
@@ -92,8 +99,8 @@ getBiasCovariates(
 
 - gee_scale:
 
-  Numeric, scale for GEE exports (only used if include_height=TRUE).
-  Default: 30
+  Numeric, scale for GEE exports (used for include_height and
+  include_ghm). Default: 30
 
 ## Value
 
@@ -119,13 +126,34 @@ SpatRaster stack with named layers:
 
   Percent Tree Cover (0-100) from Hansen GFC 2000
 
+- elevation:
+
+  Elevation (m) from SRTM (if include_terrain=TRUE)
+
 - slope:
 
-  Slope (degrees) from SRTM
+  Slope (degrees) from SRTM (if include_terrain=TRUE)
 
 - aspect:
 
-  Aspect (degrees, 0-360) from SRTM
+  Aspect (degrees, 0-360) from SRTM (if include_terrain=TRUE)
+
+- tri:
+
+  Terrain Ruggedness Index from SRTM (if include_terrain=TRUE)
+
+- tpi:
+
+  Topographic Position Index from SRTM (if include_terrain=TRUE)
+
+- roughness:
+
+  Roughness from SRTM (if include_terrain=TRUE)
+
+- ghm:
+
+  Global Human Modification Index (0-1) from Kennedy et al. (2019) (if
+  include_ghm=TRUE, requires rgee)
 
 - ifl:
 
@@ -146,8 +174,11 @@ height (10m resolution). Requires rgee package and Google Earth Engine
 account. - \*\*Dinerstein Biomes\*\*: Static dataset (2017), no temporal
 variation. - \*\*Hansen GFC Tree Cover\*\*: Uses year 2000 baseline
 regardless of year parameter. - \*\*SRTM Terrain\*\*: Static DEM, no
-temporal variation. - \*\*IFL\*\*: Available for 2000, 2013, 2016, 2020.
-Uses closest available year.
+temporal variation. Provides elevation and derived metrics (slope,
+aspect, TRI, TPI, roughness). - \*\*Global Human Modification\*\*:
+Static dataset (2016), no temporal variation. Requires rgee. -
+\*\*IFL\*\*: Available for 2000, 2013, 2016, 2020. Uses closest
+available year.
 
 \## Data Sources
 
@@ -155,7 +186,8 @@ Data is downloaded from public sources. Most do not require API keys: -
 ESA CCI: CEDA Archive - GLAD TCC 2010: GLAD/UMD - ETH Canopy Height
 2020: Google Earth Engine (requires rgee + GEE account) - Dinerstein:
 RESOLVE Ecoregions - Hansen GFC: Google Cloud Storage - SRTM:
-CGIAR-CSI - IFL: Intact Forests
+CGIAR-CSI - gHM: Google Earth Engine (requires rgee + GEE account) -
+IFL: Intact Forests
 
 ## References
 
@@ -166,6 +198,7 @@ See individual function documentation for detailed references:
 [`getDinersteinBiome`](https://atnt.github.io/spatialcovariates/reference/getDinersteinBiome.md),
 [`getHansenGFC`](https://atnt.github.io/spatialcovariates/reference/getHansenGFC.md),
 [`getSRTMTerrain`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md),
+[`getGlobalHumanMod`](https://atnt.github.io/spatialcovariates/reference/getGlobalHumanMod.md),
 [`getIFL`](https://atnt.github.io/spatialcovariates/reference/getIFL.md)
 
 ## Examples

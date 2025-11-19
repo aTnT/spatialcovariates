@@ -6,9 +6,17 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Automated Covariate Fetching for Plot2Map • spatialcovariates</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/Roboto-0.4.10/font.css" rel="stylesheet">
+<link href="deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Automated Covariate Fetching for Plot2Map">
 <meta name="description" content="Fetch, process, and stack environmental covariates for forest biomass mapping and bias modeling workflows.
@@ -20,7 +28,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top " aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">spatialcovariates</a>
 
@@ -106,7 +114,8 @@
 <span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">covariates</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">covariates</span><span class="op">)</span></span>
 <span><span class="co"># [1] "agb"          "tcc2010"      "biome"        "treecover2000"</span></span>
-<span><span class="co"># [5] "slope"        "aspect"       "ifl"</span></span></code></pre></div>
+<span><span class="co"># [5] "elevation"    "slope"        "aspect"       "tri"</span></span>
+<span><span class="co"># [9] "tpi"          "roughness"    "ghm"          "ifl"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="integration-with-plot2map">Integration with Plot2Map<a class="anchor" aria-label="anchor" href="#integration-with-plot2map"></a>
@@ -190,13 +199,20 @@
 <td>2000 (static)</td>
 </tr>
 <tr class="even">
-<td><strong>Slope &amp; Aspect</strong></td>
+<td><strong>Terrain Metrics</strong></td>
 <td><code><a href="reference/getSRTMTerrain.html">getSRTMTerrain()</a></code></td>
 <td>SRTM v4.1</td>
 <td>90m</td>
 <td>Static</td>
 </tr>
 <tr class="odd">
+<td><strong>Human Modification</strong></td>
+<td><code><a href="reference/getGlobalHumanMod.html">getGlobalHumanMod()</a></code></td>
+<td>CSP gHM (GEE)</td>
+<td>1km</td>
+<td>2016 (static, requires rgee)</td>
+</tr>
+<tr class="even">
 <td><strong>Intact Forests</strong></td>
 <td><code><a href="reference/getIFL.html">getIFL()</a></code></td>
 <td>Intact Forest Landscapes</td>
@@ -283,23 +299,47 @@
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">treecover</span>, main <span class="op">=</span> <span class="st">"Tree Cover 2000 (%)"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="terrain-slope-and-aspect">Terrain (Slope and Aspect)<a class="anchor" aria-label="anchor" href="#terrain-slope-and-aspect"></a>
+<h3 id="terrain-metrics-srtm">Terrain Metrics (SRTM)<a class="anchor" aria-label="anchor" href="#terrain-metrics-srtm"></a>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Fetch SRTM terrain derivatives</span></span>
+<code class="sourceCode R"><span><span class="co"># Fetch SRTM terrain metrics</span></span>
 <span><span class="va">terrain</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getSRTMTerrain.html">getSRTMTerrain</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Returns 6 layers: elevation, slope, aspect, TRI, TPI, roughness</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">terrain</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">terrain</span><span class="op">$</span><span class="va">elevation</span>, main <span class="op">=</span> <span class="st">"Elevation (m)"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">terrain</span><span class="op">$</span><span class="va">slope</span>, main <span class="op">=</span> <span class="st">"Slope (degrees)"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">terrain</span><span class="op">$</span><span class="va">aspect</span>, main <span class="op">=</span> <span class="st">"Aspect (degrees)"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">terrain</span><span class="op">$</span><span class="va">aspect</span>, main <span class="op">=</span> <span class="st">"Aspect (degrees)"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">terrain</span><span class="op">$</span><span class="va">tri</span>, main <span class="op">=</span> <span class="st">"Terrain Ruggedness Index"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">terrain</span><span class="op">$</span><span class="va">tpi</span>, main <span class="op">=</span> <span class="st">"Topographic Position Index"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">terrain</span><span class="op">$</span><span class="va">roughness</span>, main <span class="op">=</span> <span class="st">"Roughness"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="global-human-modification-index-via-google-earth-engine">Global Human Modification Index (via Google Earth Engine)<a class="anchor" aria-label="anchor" href="#global-human-modification-index-via-google-earth-engine"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/rgee/" class="external-link">rgee</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Initialize Earth Engine (first time setup)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/rgee/reference/ee_Initialize.html" class="external-link">ee_Initialize</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Fetch Global Human Modification Index</span></span>
+<span><span class="va">ghm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getGlobalHumanMod.html">getGlobalHumanMod</a></span><span class="op">(</span></span>
+<span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="st">"10km"</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fl">1000</span>  <span class="co"># Use 1km native resolution</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ghm</span>, main <span class="op">=</span> <span class="st">"Human Modification Index (0-1)"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Requirements</strong>: - Install rgee: <code>install.packages("rgee")</code> - Set up Google Earth Engine account: <a href="https://earthengine.google.com/signup/" class="external-link uri">https://earthengine.google.com/signup/</a> - Initialize rgee: <code><a href="https://r-spatial.github.io/rgee/reference/ee_Initialize.html" class="external-link">rgee::ee_Initialize()</a></code></p>
 </div>
 <div class="section level3">
 <h3 id="intact-forest-landscapes">Intact Forest Landscapes<a class="anchor" aria-label="anchor" href="#intact-forest-landscapes"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch IFL 2016</span></span>
 <span><span class="va">ifl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getIFL.html">getIFL</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
@@ -317,7 +357,7 @@
 <h3 id="selective-covariate-fetching">Selective Covariate Fetching<a class="anchor" aria-label="anchor" href="#selective-covariate-fetching"></a>
 </h3>
 <p>Fetch only specific covariates:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fetch only AGB, TCC, and terrain</span></span>
 <span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
@@ -332,7 +372,7 @@
 <h3 id="using-existing-downloaded-data">Using Existing Downloaded Data<a class="anchor" aria-label="anchor" href="#using-existing-downloaded-data"></a>
 </h3>
 <p>Avoid re-downloading by using local files:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First download</span></span>
 <span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
@@ -351,7 +391,7 @@
 <h3 id="save-processed-rasters">Save Processed Rasters<a class="anchor" aria-label="anchor" href="#save-processed-rasters"></a>
 </h3>
 <p>Save processed covariates to disk:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
@@ -363,7 +403,7 @@
 <h3 id="custom-spatial-extents">Custom Spatial Extents<a class="anchor" aria-label="anchor" href="#custom-spatial-extents"></a>
 </h3>
 <p>Use different extent formats:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># From sf polygon</span></span>
@@ -412,9 +452,15 @@
 <p><strong>Note</strong>: This dataset replaced the previous Sexton et al. data due to UMD GLCF FTP server discontinuation. Hansen GFC provides comparable tree cover estimates and is actively maintained on Google Cloud Storage.</p>
 </div>
 <div class="section level3">
-<h3 id="srtm-dem">SRTM DEM<a class="anchor" aria-label="anchor" href="#srtm-dem"></a>
+<h3 id="srtm-dem-terrain-metrics">SRTM DEM (Terrain Metrics)<a class="anchor" aria-label="anchor" href="#srtm-dem-terrain-metrics"></a>
 </h3>
 <p>Jarvis, A., Reuter, H. I., Nelson, A., &amp; Guevara, E. (2008). Hole-filled SRTM for the globe Version 4. CGIAR-CSI SRTM 90m Database. <a href="http://srtm.csi.cgiar.org" class="external-link uri">http://srtm.csi.cgiar.org</a></p>
+</div>
+<div class="section level3">
+<h3 id="global-human-modification-index">Global Human Modification Index<a class="anchor" aria-label="anchor" href="#global-human-modification-index"></a>
+</h3>
+<p>Kennedy, C. M., Oakleaf, J. R., Theobald, D. M., Baruch-Mordo, S., &amp; Kiesecker, J. (2019). Managing the middle: A shift in conservation priorities based on the global human modification gradient. <em>Global Change Biology</em>, 25(3), 811-826. <a href="https://doi.org/10.1111/gcb.14549" class="external-link uri">https://doi.org/10.1111/gcb.14549</a></p>
+<p><strong>Access</strong>: Google Earth Engine asset <code>CSP/HM/GlobalHumanModification</code> <strong>Requirements</strong>: rgee package and Google Earth Engine account (<a href="https://earthengine.google.com/signup/" class="external-link uri">https://earthengine.google.com/signup/</a>)</p>
 </div>
 <div class="section level3">
 <h3 id="intact-forest-landscapes-1">Intact Forest Landscapes<a class="anchor" aria-label="anchor" href="#intact-forest-landscapes-1"></a>
@@ -466,9 +512,14 @@
 <tr class="even">
 <td>SRTM Terrain</td>
 <td>Static</td>
-<td>No temporal variation</td>
+<td>No temporal variation (provides 6 metrics)</td>
 </tr>
 <tr class="odd">
+<td>Global Human Modification</td>
+<td>2016</td>
+<td>Static</td>
+</tr>
+<tr class="even">
 <td>IFL</td>
 <td>2000, 2013, 2016, 2020</td>
 <td>Uses closest available year</td>
@@ -488,7 +539,7 @@
 <h3 id="download-failures">Download Failures<a class="anchor" aria-label="anchor" href="#download-failures"></a>
 </h3>
 <p>If downloads fail due to network issues:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Increase timeout</span></span>
 <span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">bbox</span>,</span>
@@ -499,7 +550,7 @@
 <h3 id="memory-issues-with-large-extents">Memory Issues with Large Extents<a class="anchor" aria-label="anchor" href="#memory-issues-with-large-extents"></a>
 </h3>
 <p>For very large regions at fine resolution:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use coarser resolution</span></span>
 <span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">large_bbox</span>,</span>

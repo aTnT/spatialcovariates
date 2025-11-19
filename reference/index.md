@@ -12,6 +12,8 @@
   : Fetch ETH Global Canopy Height 2020 via Google Earth Engine
 - [`getGLADTCC2010()`](https://atnt.github.io/spatialcovariates/reference/getGLADTCC2010.md)
   : Fetch GLAD Tree Cover 2010 data
+- [`getGlobalHumanMod()`](https://atnt.github.io/spatialcovariates/reference/getGlobalHumanMod.md)
+  : Fetch Global Human Modification Index via Google Earth Engine
 - [`getHansenGFC()`](https://atnt.github.io/spatialcovariates/reference/getHansenGFC.md)
   : Fetch Hansen Global Forest Change Tree Cover 2000
 - [`getIFL()`](https://atnt.github.io/spatialcovariates/reference/getIFL.md)
