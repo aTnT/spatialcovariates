@@ -52,7 +52,8 @@ covariates <- getBiasCovariates(
 terra::plot(covariates)
 names(covariates)
 # [1] "agb"          "tcc2010"      "biome"        "treecover2000"
-# [5] "slope"        "aspect"       "ifl"
+# [5] "elevation"    "slope"        "aspect"       "tri"
+# [9] "tpi"          "roughness"    "ghm"          "ifl"
 ```
 
 ### Integration with Plot2Map
@@ -91,7 +92,8 @@ bias_data <- extractBiasCovariates(
 | **Canopy Height 2020** | `getETHCanopyHeight()` | ETH Global Canopy Height | 10m | 2020 (static) |
 | **Biomes** | `getDinersteinBiome()` | RESOLVE Ecoregions | Vector | 2017 (static) |
 | **Tree Cover 2000** | `getHansenGFC()` | Hansen GFC | 30m | 2000 (static) |
-| **Slope & Aspect** | `getSRTMTerrain()` | SRTM v4.1 | 90m | Static |
+| **Terrain Metrics** | `getSRTMTerrain()` | SRTM v4.1 | 90m | Static |
+| **Human Modification** | `getGlobalHumanMod()` | CSP gHM (GEE) | 1km | 2016 (static, requires rgee) |
 | **Intact Forests** | `getIFL()` | Intact Forest Landscapes | Vector | 2000, 2013, 2016, 2020 |
 
 ## Individual Covariate Examples
@@ -174,19 +176,47 @@ treecover <- getHansenGFC(
 plot(treecover, main = "Tree Cover 2000 (%)")
 ```
 
-### Terrain (Slope and Aspect)
+### Terrain Metrics (SRTM)
 
 ```r
-# Fetch SRTM terrain derivatives
+# Fetch SRTM terrain metrics
 terrain <- getSRTMTerrain(
   extent = mexico_bbox,
   resolution = "10km"
 )
 
-par(mfrow = c(1, 2))
+# Returns 6 layers: elevation, slope, aspect, TRI, TPI, roughness
+names(terrain)
+plot(terrain$elevation, main = "Elevation (m)")
 plot(terrain$slope, main = "Slope (degrees)")
 plot(terrain$aspect, main = "Aspect (degrees)")
+plot(terrain$tri, main = "Terrain Ruggedness Index")
+plot(terrain$tpi, main = "Topographic Position Index")
+plot(terrain$roughness, main = "Roughness")
 ```
+
+### Global Human Modification Index (via Google Earth Engine)
+
+```r
+library(rgee)
+
+# Initialize Earth Engine (first time setup)
+ee_Initialize()
+
+# Fetch Global Human Modification Index
+ghm <- getGlobalHumanMod(
+  extent = mexico_bbox,
+  resolution = "10km",
+  scale = 1000  # Use 1km native resolution
+)
+
+plot(ghm, main = "Human Modification Index (0-1)")
+```
+
+**Requirements**:
+- Install rgee: `install.packages("rgee")`
+- Set up Google Earth Engine account: https://earthengine.google.com/signup/
+- Initialize rgee: `rgee::ee_Initialize()`
 
 ### Intact Forest Landscapes
 
@@ -297,8 +327,14 @@ Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukav
 
 **Note**: This dataset replaced the previous Sexton et al. data due to UMD GLCF FTP server discontinuation. Hansen GFC provides comparable tree cover estimates and is actively maintained on Google Cloud Storage.
 
-### SRTM DEM
+### SRTM DEM (Terrain Metrics)
 Jarvis, A., Reuter, H. I., Nelson, A., & Guevara, E. (2008). Hole-filled SRTM for the globe Version 4. CGIAR-CSI SRTM 90m Database. http://srtm.csi.cgiar.org
+
+### Global Human Modification Index
+Kennedy, C. M., Oakleaf, J. R., Theobald, D. M., Baruch-Mordo, S., & Kiesecker, J. (2019). Managing the middle: A shift in conservation priorities based on the global human modification gradient. *Global Change Biology*, 25(3), 811-826. https://doi.org/10.1111/gcb.14549
+
+**Access**: Google Earth Engine asset `CSP/HM/GlobalHumanModification`
+**Requirements**: rgee package and Google Earth Engine account (https://earthengine.google.com/signup/)
 
 ### Intact Forest Landscapes
 Potapov, P., Hansen, M. C., Laestadius, L., et al. (2017). The last frontiers of wilderness: Tracking loss of intact forest landscapes from 2000 to 2013. *Science Advances*, 3(1), e1600821. https://doi.org/10.1126/sciadv.1600821
@@ -314,7 +350,8 @@ Not all datasets cover all years. The package handles temporal mismatches as fol
 | ETH Canopy Height 2020 | 2020 | Static (year 2020 canopy height, requires rgee) |
 | Dinerstein Biomes | 2017 | Static |
 | Hansen Tree Cover | 2000 | Static (year 2000 baseline) |
-| SRTM Terrain | Static | No temporal variation |
+| SRTM Terrain | Static | No temporal variation (provides 6 metrics) |
+| Global Human Modification | 2016 | Static |
 | IFL | 2000, 2013, 2016, 2020 | Uses closest available year |
 
 ## Dependencies

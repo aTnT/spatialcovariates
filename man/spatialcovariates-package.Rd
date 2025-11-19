@@ -24,7 +24,8 @@ The package exports the following main user-facing functions:
   \item{\code{\link{getETHCanopyHeight}}}{Fetch ETH Global Canopy Height 2020 (requires rgee)}
   \item{\code{\link{getDinersteinBiome}}}{Fetch RESOLVE Ecoregions biomes}
   \item{\code{\link{getHansenGFC}}}{Fetch Hansen Global Forest Change Tree Cover 2000}
-  \item{\code{\link{getSRTMTerrain}}}{Fetch SRTM terrain (slope and aspect)}
+  \item{\code{\link{getSRTMTerrain}}}{Fetch SRTM terrain metrics (elevation, slope, aspect, TRI, TPI, roughness)}
+  \item{\code{\link{getGlobalHumanMod}}}{Fetch Global Human Modification Index}
   \item{\code{\link{getIFL}}}{Fetch Intact Forest Landscapes}
 }
 }

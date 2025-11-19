@@ -22,20 +22,26 @@
 #' @param include_height Logical, include ETH Canopy Height 2020 (requires rgee). Default: FALSE
 #' @param include_biome Logical, include Dinerstein biomes. Default: TRUE
 #' @param include_treecover Logical, include Hansen GFC tree cover. Default: TRUE
-#' @param include_terrain Logical, include SRTM terrain (slope/aspect). Default: TRUE
+#' @param include_terrain Logical, include SRTM terrain metrics (elevation, slope, aspect, TRI, TPI, roughness). Default: TRUE
+#' @param include_ghm Logical, include Global Human Modification Index (requires rgee). Default: FALSE
 #' @param include_ifl Logical, include Intact Forest Landscapes. Default: TRUE
-#' @param gee_scale Numeric, scale for GEE exports (only used if include_height=TRUE). Default: 30
+#' @param gee_scale Numeric, scale for GEE exports (used for include_height and include_ghm). Default: 30
 #'
 #' @return SpatRaster stack with named layers:
 #' \describe{
-#'   \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
-#'   \item{tcc2010}{Tree Canopy Cover (percent) from GLAD TCC 2010}
-#'   \item{canopy_height}{Canopy Height (m) from ETH 2020 (if include_height=TRUE)}
-#'   \item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
-#'   \item{treecover2000}{Percent Tree Cover (0-100) from Hansen GFC 2000}
-#'   \item{slope}{Slope (degrees) from SRTM}
-#'   \item{aspect}{Aspect (degrees, 0-360) from SRTM}
-#'   \item{ifl}{Intact Forest Landscape binary (0/1)}
+#' \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
+#' \item{tcc2010}{Tree Canopy Cover (percent) from GLAD TCC 2010}
+#' \item{canopy_height}{Canopy Height (m) from ETH 2020 (if include_height=TRUE)}
+#' \item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
+#' \item{treecover2000}{Percent Tree Cover (0-100) from Hansen GFC 2000}
+#' \item{elevation}{Elevation (m) from SRTM (if include_terrain=TRUE)}
+#' \item{slope}{Slope (degrees) from SRTM (if include_terrain=TRUE)}
+#' \item{aspect}{Aspect (degrees, 0-360) from SRTM (if include_terrain=TRUE)}
+#' \item{tri}{Terrain Ruggedness Index from SRTM (if include_terrain=TRUE)}
+#' \item{tpi}{Topographic Position Index from SRTM (if include_terrain=TRUE)}
+#' \item{roughness}{Roughness from SRTM (if include_terrain=TRUE)}
+#' \item{ghm}{Global Human Modification Index (0-1) from Kennedy et al. (2019) (if include_ghm=TRUE, requires rgee)}
+#' \item{ifl}{Intact Forest Landscape binary (0/1)}
 #' }
 #'
 #' @details
@@ -50,7 +56,9 @@
 #'   Requires rgee package and Google Earth Engine account.
 #' - **Dinerstein Biomes**: Static dataset (2017), no temporal variation.
 #' - **Hansen GFC Tree Cover**: Uses year 2000 baseline regardless of year parameter.
-#' - **SRTM Terrain**: Static DEM, no temporal variation.
+#' - **SRTM Terrain**: Static DEM, no temporal variation. Provides elevation and
+#'   derived metrics (slope, aspect, TRI, TPI, roughness).
+#' - **Global Human Modification**: Static dataset (2016), no temporal variation. Requires rgee.
 #' - **IFL**: Available for 2000, 2013, 2016, 2020. Uses closest available year.
 #'
 #' ## Data Sources
@@ -62,6 +70,7 @@
 #' - Dinerstein: RESOLVE Ecoregions
 #' - Hansen GFC: Google Cloud Storage
 #' - SRTM: CGIAR-CSI
+#' - gHM: Google Earth Engine (requires rgee + GEE account)
 #' - IFL: Intact Forests
 #'
 #' @export
@@ -102,7 +111,7 @@
 #' See individual function documentation for detailed references:
 #' \code{\link{getESACCIAGB}}, \code{\link{getGLADTCC2010}}, \code{\link{getETHCanopyHeight}},
 #' \code{\link{getDinersteinBiome}}, \code{\link{getHansenGFC}},
-#' \code{\link{getSRTMTerrain}}, \code{\link{getIFL}}
+#' \code{\link{getSRTMTerrain}}, \code{\link{getGlobalHumanMod}}, \code{\link{getIFL}}
 getBiasCovariates <- function(extent,
                              year = 2010,
                              resolution = "10km",
@@ -116,6 +125,7 @@ getBiasCovariates <- function(extent,
                              include_biome = TRUE,
                              include_treecover = TRUE,
                              include_terrain = TRUE,
+                             include_ghm = FALSE,
                              include_ifl = TRUE,
                              gee_scale = 30) {
 
@@ -231,9 +241,9 @@ getBiasCovariates <- function(extent,
     })
   }
 
-  # 6. SRTM Terrain (slope and aspect)
+  # 6. SRTM Terrain (elevation, slope, aspect, TRI, TPI, roughness)
   if (include_terrain) {
-    message("\n=== Fetching SRTM Terrain (Slope & Aspect) ===")
+    message("\n=== Fetching SRTM Terrain ===")
     tryCatch({
       terrain <- getSRTMTerrain(
         extent = extent,
@@ -243,6 +253,10 @@ getBiasCovariates <- function(extent,
         tiles_dir = file.path(data_dir, "SRTM"),
         n_cores = n_cores
       )
+      if (!is.null(terrain$elevation)) {
+        names(terrain$elevation) <- "elevation"
+        covariates_list$elevation <- terrain$elevation
+      }
       if (!is.null(terrain$slope)) {
         names(terrain$slope) <- "slope"
         covariates_list$slope <- terrain$slope
@@ -251,12 +265,41 @@ getBiasCovariates <- function(extent,
         names(terrain$aspect) <- "aspect"
         covariates_list$aspect <- terrain$aspect
       }
+      if (!is.null(terrain$tri)) {
+        names(terrain$tri) <- "tri"
+        covariates_list$tri <- terrain$tri
+      }
+      if (!is.null(terrain$tpi)) {
+        names(terrain$tpi) <- "tpi"
+        covariates_list$tpi <- terrain$tpi
+      }
+      if (!is.null(terrain$roughness)) {
+        names(terrain$roughness) <- "roughness"
+        covariates_list$roughness <- terrain$roughness
+      }
     }, error = function(e) {
       warning(sprintf("Failed to fetch SRTM terrain: %s", e$message))
     })
   }
 
-  # 7. Intact Forest Landscapes
+  # 7. Global Human Modification Index (via Google Earth Engine)
+  if (include_ghm) {
+    message("\n=== Fetching Global Human Modification (GEE) ===")
+    tryCatch({
+      ghm <- getGlobalHumanMod(
+        extent = extent,
+        resolution = resolution,
+        outdir = outdir,
+        scale = gee_scale
+      )
+      names(ghm) <- "ghm"
+      covariates_list$ghm <- ghm
+    }, error = function(e) {
+      warning(sprintf("Failed to fetch gHM: %s", e$message))
+    })
+  }
+
+  # 8. Intact Forest Landscapes
   if (include_ifl) {
     message("\n=== Fetching Intact Forest Landscapes ===")
     # Determine which IFL year to use (2000, 2013, 2016, 2020)

@@ -51,7 +51,7 @@ test_that("ESA CCI AGB downloads and processes correctly", {
   expect_true(all(agb_vals >= 0 & agb_vals <= 500))
 })
 
-test_that("SRTM terrain computes slope and aspect correctly", {
+test_that("SRTM terrain computes all 6 metrics correctly", {
   skip_on_cran()
   skip_on_ci()
   skip("Manual test - downloads SRTM tiles")
@@ -65,9 +65,17 @@ test_that("SRTM terrain computes slope and aspect correctly", {
   )
 
   expect_type(result, "list")
-  expect_true(all(c("slope", "aspect") %in% names(result)))
+  expect_true(all(c("elevation", "slope", "aspect", "tri", "tpi", "roughness") %in% names(result)))
+  expect_s4_class(result$elevation, "SpatRaster")
   expect_s4_class(result$slope, "SpatRaster")
   expect_s4_class(result$aspect, "SpatRaster")
+  expect_s4_class(result$tri, "SpatRaster")
+  expect_s4_class(result$tpi, "SpatRaster")
+  expect_s4_class(result$roughness, "SpatRaster")
+
+  # Elevation should be reasonable (Colombia Andes: -100 to 6000m)
+  elev_vals <- terra::values(result$elevation, na.rm = TRUE)
+  expect_true(all(elev_vals >= -200 & elev_vals <= 7000))
 
   # Slope should be 0-90 degrees
   slope_vals <- terra::values(result$slope, na.rm = TRUE)
@@ -76,6 +84,11 @@ test_that("SRTM terrain computes slope and aspect correctly", {
   # Aspect should be 0-360 degrees
   aspect_vals <- terra::values(result$aspect, na.rm = TRUE)
   expect_true(all(aspect_vals >= 0 & aspect_vals <= 360))
+
+  # TRI, TPI, roughness should be numeric
+  expect_true(is.numeric(terra::values(result$tri, na.rm = TRUE)))
+  expect_true(is.numeric(terra::values(result$tpi, na.rm = TRUE)))
+  expect_true(is.numeric(terra::values(result$roughness, na.rm = TRUE)))
 })
 
 test_that("IFL downloads and processes correctly", {
@@ -138,6 +151,44 @@ test_that("Hansen GFC downloads and processes correctly", {
   expect_true(all(tc_vals >= 0 & tc_vals <= 100))
 })
 
+test_that("Global Human Modification returns error without rgee", {
+  skip_on_cran()
+  skip_on_ci()
+
+  # This should fail gracefully if rgee not installed
+  if (!requireNamespace("rgee", quietly = TRUE)) {
+    expect_error(
+      getGlobalHumanMod(extent = test_bbox, resolution = "10km"),
+      "rgee"
+    )
+  } else {
+    skip("rgee is installed - skipping error test")
+  }
+})
+
+test_that("Global Human Modification via GEE works (manual)", {
+  skip_on_cran()
+  skip_on_ci()
+  skip("Manual test - requires rgee + GEE account")
+
+  # Only run if rgee is installed and EE is initialized
+  if (!requireNamespace("rgee", quietly = TRUE)) {
+    skip("rgee not installed")
+  }
+
+  result <- getGlobalHumanMod(
+    extent = test_bbox,
+    resolution = "10km",
+    scale = 1000
+  )
+
+  expect_s4_class(result, "SpatRaster")
+
+  # gHM should be 0-1
+  ghm_vals <- terra::values(result, na.rm = TRUE)
+  expect_true(all(ghm_vals >= 0 & ghm_vals <= 1))
+})
+
 test_that("ETH Canopy Height returns error without rgee", {
   skip_on_cran()
   skip_on_ci()
@@ -173,17 +224,22 @@ test_that("Full getBiasCovariates integration works", {
     include_biome = TRUE,
     include_treecover = FALSE,  # Skip Hansen GFC
     include_terrain = TRUE,
+    include_ghm = FALSE,  # Skip gHM (1.5GB file)
     include_ifl = TRUE
   )
 
   expect_s4_class(covariates, "SpatRaster")
-  expect_true(terra::nlyr(covariates) >= 3)  # biome, slope, aspect, ifl
+  expect_true(terra::nlyr(covariates) >= 8)  # biome, 6 terrain metrics, ifl
 
-  # Check layer names
+  # Check layer names (should include all 6 terrain metrics)
   layer_names <- names(covariates)
   expect_true("biome" %in% layer_names)
+  expect_true("elevation" %in% layer_names)
   expect_true("slope" %in% layer_names)
   expect_true("aspect" %in% layer_names)
+  expect_true("tri" %in% layer_names)
+  expect_true("tpi" %in% layer_names)
+  expect_true("roughness" %in% layer_names)
   expect_true("ifl" %in% layer_names)
 
   # All layers should have same extent and resolution

@@ -18,6 +18,7 @@ getBiasCovariates(
   include_biome = TRUE,
   include_treecover = TRUE,
   include_terrain = TRUE,
+  include_ghm = FALSE,
   include_ifl = TRUE,
   gee_scale = 30
 )
@@ -50,23 +51,30 @@ Default: "10km"}
 
 \item{include_treecover}{Logical, include Hansen GFC tree cover. Default: TRUE}
 
-\item{include_terrain}{Logical, include SRTM terrain (slope/aspect). Default: TRUE}
+\item{include_terrain}{Logical, include SRTM terrain metrics (elevation, slope, aspect, TRI, TPI, roughness). Default: TRUE}
+
+\item{include_ghm}{Logical, include Global Human Modification Index (requires rgee). Default: FALSE}
 
 \item{include_ifl}{Logical, include Intact Forest Landscapes. Default: TRUE}
 
-\item{gee_scale}{Numeric, scale for GEE exports (only used if include_height=TRUE). Default: 30}
+\item{gee_scale}{Numeric, scale for GEE exports (used for include_height and include_ghm). Default: 30}
 }
 \value{
 SpatRaster stack with named layers:
 \describe{
-  \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
-  \item{tcc2010}{Tree Canopy Cover (percent) from GLAD TCC 2010}
-  \item{canopy_height}{Canopy Height (m) from ETH 2020 (if include_height=TRUE)}
-  \item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
-  \item{treecover2000}{Percent Tree Cover (0-100) from Hansen GFC 2000}
-  \item{slope}{Slope (degrees) from SRTM}
-  \item{aspect}{Aspect (degrees, 0-360) from SRTM}
-  \item{ifl}{Intact Forest Landscape binary (0/1)}
+\item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
+\item{tcc2010}{Tree Canopy Cover (percent) from GLAD TCC 2010}
+\item{canopy_height}{Canopy Height (m) from ETH 2020 (if include_height=TRUE)}
+\item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
+\item{treecover2000}{Percent Tree Cover (0-100) from Hansen GFC 2000}
+\item{elevation}{Elevation (m) from SRTM (if include_terrain=TRUE)}
+\item{slope}{Slope (degrees) from SRTM (if include_terrain=TRUE)}
+\item{aspect}{Aspect (degrees, 0-360) from SRTM (if include_terrain=TRUE)}
+\item{tri}{Terrain Ruggedness Index from SRTM (if include_terrain=TRUE)}
+\item{tpi}{Topographic Position Index from SRTM (if include_terrain=TRUE)}
+\item{roughness}{Roughness from SRTM (if include_terrain=TRUE)}
+\item{ghm}{Global Human Modification Index (0-1) from Kennedy et al. (2019) (if include_ghm=TRUE, requires rgee)}
+\item{ifl}{Intact Forest Landscape binary (0/1)}
 }
 }
 \description{
@@ -87,7 +95,9 @@ Not all datasets have data for all years. The function uses the following logic:
   Requires rgee package and Google Earth Engine account.
 - **Dinerstein Biomes**: Static dataset (2017), no temporal variation.
 - **Hansen GFC Tree Cover**: Uses year 2000 baseline regardless of year parameter.
-- **SRTM Terrain**: Static DEM, no temporal variation.
+- **SRTM Terrain**: Static DEM, no temporal variation. Provides elevation and
+  derived metrics (slope, aspect, TRI, TPI, roughness).
+- **Global Human Modification**: Static dataset (2016), no temporal variation. Requires rgee.
 - **IFL**: Available for 2000, 2013, 2016, 2020. Uses closest available year.
 
 ## Data Sources
@@ -99,6 +109,7 @@ Data is downloaded from public sources. Most do not require API keys:
 - Dinerstein: RESOLVE Ecoregions
 - Hansen GFC: Google Cloud Storage
 - SRTM: CGIAR-CSI
+- gHM: Google Earth Engine (requires rgee + GEE account)
 - IFL: Intact Forests
 }
 \examples{
@@ -138,5 +149,5 @@ bias_model <- extractBiasCovariates(
 See individual function documentation for detailed references:
 \code{\link{getESACCIAGB}}, \code{\link{getGLADTCC2010}}, \code{\link{getETHCanopyHeight}},
 \code{\link{getDinersteinBiome}}, \code{\link{getHansenGFC}},
-\code{\link{getSRTMTerrain}}, \code{\link{getIFL}}
+\code{\link{getSRTMTerrain}}, \code{\link{getGlobalHumanMod}}, \code{\link{getIFL}}
 }

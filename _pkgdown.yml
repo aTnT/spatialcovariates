@@ -1,8 +1,23 @@
 url: https://atnt.github.io/spatialcovariates/
 
+# template:
+#   bootstrap: 5
+#   bootswatch: cosmo
 template:
   bootstrap: 5
-  bootswatch: cosmo
+  math-rendering: mathjax
+  light-switch: yes
+  bslib:
+    primary: '#C9B7A8'
+    border-radius: 0.5rem
+    btn-border-radius: 0.25rem
+    danger: '#004C34'
+    base_font:
+      google: Roboto
+    heading_font:
+      google: Roboto
+    code_font:
+      google: JetBrains Mono
 
 home:
   title: Automated Covariate Fetching for Plot2Map

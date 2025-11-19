@@ -208,9 +208,12 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
   })
 
   # Compute terrain derivatives BEFORE aggregation for accuracy
-  message("Computing slope and aspect...")
+  message("Computing terrain metrics...")
   slope <- terra::terrain(dem, v = "slope", unit = "degrees")
   aspect <- terra::terrain(dem, v = "aspect", unit = "degrees")
+  tri <- terra::terrain(dem, v = "TRI")      # Terrain Ruggedness Index
+  tpi <- terra::terrain(dem, v = "TPI")      # Topographic Position Index
+  roughness <- terra::terrain(dem, v = "roughness")
 
   # Aggregate to target resolution
   # SRTM native resolution is ~90m
@@ -221,11 +224,19 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
     message(sprintf("Aggregating terrain by factor %d (90m -> %dm)",
                    agg_factor, target_res))
 
+    # Aggregate elevation using mean
+    dem <- aggregate_raster(dem, agg_factor, circular = FALSE, fun = "mean")
+
     # Aggregate slope using standard mean
     slope <- aggregate_raster(slope, agg_factor, circular = FALSE, fun = "mean")
 
     # Aggregate aspect using circular mean (special handling)
     aspect <- aggregate_raster(aspect, agg_factor, circular = TRUE)
+
+    # Aggregate TRI, TPI, roughness using mean
+    tri <- aggregate_raster(tri, agg_factor, circular = FALSE, fun = "mean")
+    tpi <- aggregate_raster(tpi, agg_factor, circular = FALSE, fun = "mean")
+    roughness <- aggregate_raster(roughness, agg_factor, circular = FALSE, fun = "mean")
   }
 
   # Save if outdir specified
@@ -233,16 +244,23 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
     ensure_directory(outdir)
     res_label <- gsub("000$", "km", as.character(target_res/1000))
 
-    slope_file <- file.path(outdir, sprintf("slope_%s.tif", res_label))
-    terra::writeRaster(slope, slope_file, overwrite = TRUE)
-    message(sprintf("Saved slope to %s", slope_file))
-
-    aspect_file <- file.path(outdir, sprintf("aspect_%s.tif", res_label))
-    terra::writeRaster(aspect, aspect_file, overwrite = TRUE)
-    message(sprintf("Saved aspect to %s", aspect_file))
+    terra::writeRaster(dem, file.path(outdir, sprintf("elevation_%s.tif", res_label)), overwrite = TRUE)
+    terra::writeRaster(slope, file.path(outdir, sprintf("slope_%s.tif", res_label)), overwrite = TRUE)
+    terra::writeRaster(aspect, file.path(outdir, sprintf("aspect_%s.tif", res_label)), overwrite = TRUE)
+    terra::writeRaster(tri, file.path(outdir, sprintf("tri_%s.tif", res_label)), overwrite = TRUE)
+    terra::writeRaster(tpi, file.path(outdir, sprintf("tpi_%s.tif", res_label)), overwrite = TRUE)
+    terra::writeRaster(roughness, file.path(outdir, sprintf("roughness_%s.tif", res_label)), overwrite = TRUE)
+    message(sprintf("Saved terrain metrics to %s", outdir))
   }
 
-  return(list(slope = slope, aspect = aspect))
+  return(list(
+    elevation = dem,
+    slope = slope,
+    aspect = aspect,
+    tri = tri,
+    tpi = tpi,
+    roughness = roughness
+  ))
 }
 
 #' Fetch SRTM Terrain (Slope and Aspect)
@@ -260,11 +278,15 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
 #'   Default: "data/SRTM"
 #' @param n_cores Integer, number of cores for parallel download. Default: 1
 #'
-#' @return Named list with two SpatRaster objects:
-#'   \describe{
-#'     \item{slope}{Slope in degrees (0-90)}
-#'     \item{aspect}{Aspect in degrees (0-360), where 0=North, 90=East, 180=South, 270=West}
-#'   }
+#' @return Named list with six SpatRaster objects:
+#' \describe{
+#' \item{elevation}{Elevation in meters above sea level}
+#' \item{slope}{Slope in degrees (0-90)}
+#' \item{aspect}{Aspect in degrees (0-360), where 0=North, 90=East, 180=South, 270=West}
+#' \item{tri}{Terrain Ruggedness Index - mean elevation difference between adjacent cells}
+#' \item{tpi}{Topographic Position Index - difference from mean elevation of surrounding cells}
+#' \item{roughness}{Roughness - difference between max and min elevation in 3x3 neighborhood}
+#' }
 #'
 #' @export
 #'
@@ -276,8 +298,14 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
 #'
 #' # Fetch terrain data
 #' terrain <- getSRTMTerrain(bbox, resolution = "10km")
+#'
+#' # Plot individual metrics
+#' plot(terrain$elevation, main = "Elevation (m)")
 #' plot(terrain$slope, main = "Slope (degrees)")
 #' plot(terrain$aspect, main = "Aspect (degrees)")
+#' plot(terrain$tri, main = "Terrain Ruggedness Index")
+#' plot(terrain$tpi, main = "Topographic Position Index")
+#' plot(terrain$roughness, main = "Roughness")
 #' }
 #'
 #' @references
