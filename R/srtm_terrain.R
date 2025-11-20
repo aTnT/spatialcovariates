@@ -175,7 +175,8 @@ download_srtm_dem <- function(roi = NULL,
     cl <- parallel::makeCluster(n_cores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
     # Export variables to cluster workers
-    parallel::clusterExport(cl, c("tile_names", "hgt_files", "base_url", "output_folder", "timeout", "has_earthdatalogin"),
+    parallel::clusterExport(cl, c("tile_names", "hgt_files", "base_url", "output_folder",
+     "timeout", "has_earthdatalogin"),
                           envir = environment())
     parallel::clusterExport(cl, "download_with_retry",
                           envir = asNamespace("spatialcovariates"))
