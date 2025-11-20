@@ -167,12 +167,30 @@ process_glad_tcc_2010 <- function(files, extent, resolution = "10km", outdir = N
 
   message("Processing GLAD TCC 2010 tiles...")
 
-  # Load tiles
+  # Define target extent
+  extent_vect <- terra::ext(bbox[1], bbox[3], bbox[2], bbox[4])
+
+  # Calculate aggregation factor
+  native_res <- 30  # meters
+  agg_factor <- calc_aggregation_factor(native_res, target_res)
+
+  # Load, crop, and aggregate tiles BEFORE mosaicking (much faster!)
   tcc_rasters <- lapply(files, function(f) {
     tryCatch({
-      terra::rast(f)
+      # Load tile
+      r <- terra::rast(f)
+
+      # Crop immediately to reduce data volume
+      r <- terra::crop(r, extent_vect)
+
+      # Aggregate immediately if needed (while data is small)
+      if (agg_factor > 1) {
+        r <- terra::aggregate(r, fact = agg_factor, fun = mean, na.rm = TRUE)
+      }
+
+      return(r)
     }, error = function(e) {
-      warning(sprintf("Failed to read %s: %s", f, e$message))
+      warning(sprintf("Failed to process %s: %s", f, e$message))
       return(NULL)
     })
   })
@@ -184,39 +202,16 @@ process_glad_tcc_2010 <- function(files, extent, resolution = "10km", outdir = N
     stop("Failed to load any TCC rasters")
   }
 
-  # Mosaic if multiple tiles
+  # Mosaic if multiple tiles (now much smaller/faster!)
   if (length(tcc_rasters) == 1) {
     tcc <- tcc_rasters[[1]]
   } else {
-    message("Mosaicking multiple tiles...")
+    message(sprintf("Mosaicking %d aggregated tiles...", length(tcc_rasters)))
     tcc <- do.call(terra::mosaic, tcc_rasters)
   }
 
-  # Crop to extent
-  extent_vect <- terra::ext(bbox[1], bbox[3], bbox[2], bbox[4])
+  # Final crop to exact extent (in case mosaic extended bounds)
   tcc <- terra::crop(tcc, extent_vect)
-
-  # Aggregate from 30m to target resolution
-  native_res <- 30  # meters
-  agg_factor <- calc_aggregation_factor(native_res, target_res)
-
-  if (agg_factor > 1) {
-    message(sprintf("Aggregating TCC by factor %d (30m -> %dm)",
-                   agg_factor, target_res))
-
-    # For very large aggregation factors, do it in steps to avoid memory issues
-    if (agg_factor > 100) {
-      message("Large aggregation factor detected, processing in steps...")
-      step_factor <- 10
-      while (agg_factor > 1) {
-        current_factor <- min(step_factor, agg_factor)
-        tcc <- terra::aggregate(tcc, fact = current_factor, fun = mean, na.rm = TRUE)
-        agg_factor <- agg_factor / current_factor
-      }
-    } else {
-      tcc <- terra::aggregate(tcc, fact = agg_factor, fun = mean, na.rm = TRUE)
-    }
-  }
 
   # Save if outdir specified
   if (!is.null(outdir)) {

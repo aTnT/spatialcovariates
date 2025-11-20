@@ -1,5 +1,19 @@
 # spatialcovariates 0.1.1 (Development)
 
+## Performance Improvements
+
+* **Optimisation for tile-based raster processing** - Reduced processing time for typical regions
+  - **Affected functions**: `getGLADTCC2010()`, `getHansenGFC()`, `getESACCIAGB()`, `getSRTMTerrain()`
+  - **Optimisation**: Crop and aggregate tiles individually before mosaicking (instead of mosaic-then-crop-then-aggregate)
+  - **Impact**:
+    - Reduces data volume by 95-99% before mosaicking
+    - Single-pass aggregation (removed inefficient step-wise aggregation)
+    - Lower memory usage
+  - **Technical details**: Processing pattern changed from:
+    - Old: Load full tiles → Mosaic → Crop → Multi-step aggregate
+    - New: Load tile → Crop immediately → Single-pass aggregate → Mosaic small tiles
+  - **SRTM case**: SRTM terrain derivatives still computed at native resolution before aggregation for accuracy
+
 ## Function Default Changes
 
 * **`getBiasCovariates()`**: Changed `include_agb` parameter default from `TRUE` to `FALSE`

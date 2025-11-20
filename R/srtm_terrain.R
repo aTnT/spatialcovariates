@@ -171,12 +171,17 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
 
   message("Processing SRTM DEM tiles...")
 
-  # Load tiles
+  # Define target extent
+  extent_vect <- terra::ext(bbox[1], bbox[3], bbox[2], bbox[4])
+
+  # Load and crop tiles BEFORE mosaicking (much faster!)
   dem_rasters <- lapply(files, function(f) {
     tryCatch({
-      terra::rast(f)
+      r <- terra::rast(f)
+      # Crop immediately to reduce data volume
+      terra::crop(r, extent_vect)
     }, error = function(e) {
-      warning(sprintf("Failed to read %s: %s", f, e$message))
+      warning(sprintf("Failed to process %s: %s", f, e$message))
       return(NULL)
     })
   })
@@ -188,24 +193,16 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
     stop("Failed to load any DEM rasters")
   }
 
-  # Mosaic if multiple tiles
+  # Mosaic if multiple tiles (now much smaller!)
   if (length(dem_rasters) == 1) {
     dem <- dem_rasters[[1]]
   } else {
-    message("Mosaicking multiple DEM tiles...")
+    message(sprintf("Mosaicking %d cropped DEM tiles...", length(dem_rasters)))
     dem <- do.call(terra::mosaic, dem_rasters)
   }
 
-  # Crop to extent
-  extent_vect <- terra::ext(bbox[1], bbox[3], bbox[2], bbox[4])
-  tryCatch({
-    dem <- terra::crop(dem, extent_vect)
-  }, error = function(e) {
-    stop(sprintf("Failed to crop DEM to extent [%s]. DEM extent: [%s]. Error: %s",
-                paste(bbox, collapse=", "),
-                paste(as.vector(terra::ext(dem)), collapse=", "),
-                e$message))
-  })
+  # Final crop to exact extent
+  dem <- terra::crop(dem, extent_vect)
 
   # Compute terrain derivatives BEFORE aggregation for accuracy
   message("Computing terrain metrics...")

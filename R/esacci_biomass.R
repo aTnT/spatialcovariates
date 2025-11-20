@@ -243,45 +243,77 @@ process_esacci_biomass <- function(files, extent, resolution = "10km", outdir = 
     stop("No AGB files found in provided files")
   }
 
+  # Define target extent
+  extent_vect <- terra::ext(bbox[1], bbox[3], bbox[2], bbox[4])
+
+  # Calculate aggregation factor
+  # ESA CCI native resolution is ~100m
+  native_res <- 100  # meters
+  agg_factor <- calc_aggregation_factor(native_res, target_res)
+
   message("Processing AGB tiles...")
-  # Load and mosaic AGB tiles
-  agb_rasters <- lapply(agb_files, terra::rast)
+  # Load, crop, and aggregate AGB tiles BEFORE mosaicking (much faster!)
+  agb_rasters <- lapply(agb_files, function(f) {
+    tryCatch({
+      r <- terra::rast(f)
+      # Crop immediately to reduce data volume
+      r <- terra::crop(r, extent_vect)
+      # Aggregate immediately if needed
+      if (agg_factor > 1) {
+        r <- terra::aggregate(r, fact = agg_factor, fun = mean, na.rm = TRUE)
+      }
+      return(r)
+    }, error = function(e) {
+      warning(sprintf("Failed to process AGB file %s: %s", f, e$message))
+      return(NULL)
+    })
+  })
+
+  # Remove NULLs
+  agb_rasters <- agb_rasters[!sapply(agb_rasters, is.null)]
+
+  # Mosaic if multiple tiles (now much smaller!)
   if (length(agb_rasters) == 1) {
     agb <- agb_rasters[[1]]
   } else {
+    message(sprintf("Mosaicking %d aggregated AGB tiles...", length(agb_rasters)))
     agb <- do.call(terra::mosaic, agb_rasters)
   }
 
-  # Crop to extent
-  extent_vect <- terra::ext(bbox[1], bbox[3], bbox[2], bbox[4])
+  # Final crop to exact extent
   agb <- terra::crop(agb, extent_vect)
-
-  # Aggregate if needed (native ~100m to target resolution)
-  native_res <- terra::res(agb)[1] * 111000  # Convert degrees to meters (approximate)
-  agg_factor <- calc_aggregation_factor(native_res, target_res)
-
-  if (agg_factor > 1) {
-    message(sprintf("Aggregating AGB by factor %d", agg_factor))
-    agb <- terra::aggregate(agb, fact = agg_factor, fun = mean, na.rm = TRUE)
-  }
 
   # Process SD if available
   sd <- NULL
   if (length(sd_files) > 0) {
     message("Processing SD tiles...")
-    sd_rasters <- lapply(sd_files, terra::rast)
+    # Load, crop, and aggregate SD tiles BEFORE mosaicking
+    sd_rasters <- lapply(sd_files, function(f) {
+      tryCatch({
+        r <- terra::rast(f)
+        r <- terra::crop(r, extent_vect)
+        if (agg_factor > 1) {
+          r <- terra::aggregate(r, fact = agg_factor, fun = mean, na.rm = TRUE)
+        }
+        return(r)
+      }, error = function(e) {
+        warning(sprintf("Failed to process SD file %s: %s", f, e$message))
+        return(NULL)
+      })
+    })
+
+    # Remove NULLs
+    sd_rasters <- sd_rasters[!sapply(sd_rasters, is.null)]
+
     if (length(sd_rasters) == 1) {
       sd <- sd_rasters[[1]]
     } else {
+      message(sprintf("Mosaicking %d aggregated SD tiles...", length(sd_rasters)))
       sd <- do.call(terra::mosaic, sd_rasters)
     }
 
+    # Final crop to exact extent
     sd <- terra::crop(sd, extent_vect)
-
-    if (agg_factor > 1) {
-      message(sprintf("Aggregating SD by factor %d", agg_factor))
-      sd <- terra::aggregate(sd, fact = agg_factor, fun = mean, na.rm = TRUE)
-    }
   }
 
   # Save if outdir specified
