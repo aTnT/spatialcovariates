@@ -41,7 +41,7 @@ Named list with six SpatRaster objects:
 }
 \description{
 Downloads SRTM DEM data and computes terrain derivatives such as slope, aspect,
-Terrain Ruggedness Index (TRI), Topographic Position Index (TPI) and roughness 
+Terrain Ruggedness Index (TRI), Topographic Position Index (TPI) and roughness
 at the target resolution.
 }
 \examples{

@@ -17,7 +17,9 @@
 #' @param download Logical, whether to download tiles (TRUE) or use existing. Default: TRUE
 #' @param data_dir Character, base directory for all data storage. Default: "data"
 #' @param n_cores Integer, number of cores for parallel downloads. Default: 1
-#' @param include_agb Logical, include ESA CCI AGB data. Default: TRUE
+#' @param include_agb Logical, include ESA CCI AGB data. Default: FALSE.
+#'   Note: For Plot2Map workflows, use \code{\link{getESACCIAGB}} separately to get
+#'   both AGB and SD together, avoiding duplicate downloads.
 #' @param include_tcc Logical, include GLAD TCC 2010 tree cover data. Default: TRUE
 #' @param include_height Logical, include ETH Canopy Height 2020 (requires rgee). Default: FALSE
 #' @param include_biome Logical, include Dinerstein biomes. Default: TRUE
@@ -28,9 +30,9 @@
 #' @param include_ifl Logical, include Intact Forest Landscapes. Default: TRUE
 #' @param gee_scale Numeric, scale for GEE exports (used for include_height and include_ghm). Default: 30
 #'
-#' @return SpatRaster stack with named layers:
+#' @return SpatRaster stack with named layers (exact layers depend on include_* parameters):
 #' \describe{
-#' \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI}
+#' \item{agb}{Aboveground Biomass (Mg/ha) from ESA CCI (if include_agb=TRUE)}
 #' \item{tcc2010}{Tree Canopy Cover (percent) from GLAD TCC 2010}
 #' \item{canopy_height}{Canopy Height (m) from ETH 2020 (if include_height=TRUE)}
 #' \item{biome}{Biome classification (1-14) from RESOLVE Ecoregions}
@@ -87,28 +89,41 @@
 #' # Define extent for Mexico
 #' mexico_bbox <- c(xmin = -118, ymin = 14, xmax = -86, ymax = 33)
 #'
-#' # Fetch all covariates at 10km resolution
+#' # Recommended: Fetch AGB and SD separately (for Plot2Map workflows)
+#' biomass_data <- getESACCIAGB(
+#'   extent = mexico_bbox,
+#'   year = 2010,
+#'   resolution = "10km"
+#' )
+#' agb_map <- biomass_data$agb
+#' sd_map <- biomass_data$sd
+#'
+#' # Fetch environmental covariates (no AGB duplication)
 #' covariates <- getBiasCovariates(
 #'   extent = mexico_bbox,
 #'   year = 2010,
 #'   resolution = "10km",
 #'   n_cores = 4
+#'   # include_agb = FALSE by default
 #' )
 #'
 #' # Plot stack
 #' plot(covariates)
 #'
-#' # Access individual layers
-#' agb <- covariates[["agb"]]
-#' slope <- covariates[["slope"]]
-#'
 #' # Use in Plot2Map workflow
 #' library(Plot2Map)
-#' bias_model <- extractBiasCovariates(
+#' bias_data <- extractBiasCovariates(
 #'   plot_data = my_plots,
-#'   map_agb_raster = covariates[["agb"]],
-#'   covariate_rasters = covariates[[c("height", "biome", "treecover",
-#'                                     "slope", "aspect", "ifl")]]
+#'   map_agb = agb_map,
+#'   map_sd = sd_map,
+#'   covariates = list(
+#'     height = covariates[["height"]],
+#'     biome = covariates[["biome"]],
+#'     treecover = covariates[["treecover2000"]],
+#'     slope = covariates[["slope"]],
+#'     aspect = covariates[["aspect"]],
+#'     ifl = covariates[["ifl"]]
+#'   )
 #' )
 #' }
 #'
@@ -124,7 +139,7 @@ getBiasCovariates <- function(extent,
                              download = TRUE,
                              data_dir = "data",
                              n_cores = 1,
-                             include_agb = TRUE,
+                             include_agb = FALSE,
                              include_tcc = TRUE,
                              include_height = FALSE,
                              include_biome = TRUE,
