@@ -40,6 +40,30 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="spatialcovariates-011-development">spatialcovariates 0.1.1 (Development)<a class="anchor" aria-label="anchor" href="#spatialcovariates-011-development"></a></h2>
 <div class="section level3">
+<h3 id="performance-improvements-0-1-1">Performance Improvements<a class="anchor" aria-label="anchor" href="#performance-improvements-0-1-1"></a></h3>
+<ul><li>
+<strong>Optimisation for tile-based raster processing</strong> - Reduced processing time for typical regions
+<ul><li>
+<strong>Affected functions</strong>: <code><a href="../reference/getGLADTCC2010.html">getGLADTCC2010()</a></code>, <code><a href="../reference/getHansenGFC.html">getHansenGFC()</a></code>, <code><a href="../reference/getESACCIAGB.html">getESACCIAGB()</a></code>, <code><a href="../reference/getSRTMTerrain.html">getSRTMTerrain()</a></code>
+</li>
+<li>
+<strong>Optimisation</strong>: Crop and aggregate tiles individually before mosaicking (instead of mosaic-then-crop-then-aggregate)</li>
+<li>
+<strong>Impact</strong>:
+<ul><li>Reduces data volume by 95-99% before mosaicking</li>
+<li>Single-pass aggregation (removed inefficient step-wise aggregation)</li>
+<li>Lower memory usage</li>
+</ul></li>
+<li>
+<strong>Technical details</strong>: Processing pattern changed from:
+<ul><li>Old: Load full tiles → Mosaic → Crop → Multi-step aggregate</li>
+<li>New: Load tile → Crop immediately → Single-pass aggregate → Mosaic small tiles</li>
+</ul></li>
+<li>
+<strong>SRTM case</strong>: SRTM terrain derivatives still computed at native resolution before aggregation for accuracy</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
 <h3 id="function-default-changes-0-1-1">Function Default Changes<a class="anchor" aria-label="anchor" href="#function-default-changes-0-1-1"></a></h3>
 <ul><li>
 <strong><code><a href="../reference/getBiasCovariates.html">getBiasCovariates()</a></code></strong>: Changed <code>include_agb</code> parameter default from <code>TRUE</code> to <code>FALSE</code>
