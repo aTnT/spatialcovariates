@@ -1,10 +1,44 @@
 # Changelog
 
+## spatialcovariates 0.1.1 (Development)
+
+### Function Default Changes
+
+- **[`getBiasCovariates()`](https://atnt.github.io/spatialcovariates/reference/getBiasCovariates.md)**:
+  Changed `include_agb` parameter default from `TRUE` to `FALSE`
+  - **Rationale**: Avoids duplicate downloads when users fetch AGB and
+    SD separately using
+    [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md),
+    which is often required for Plot2Map workflows.
+
+  - **Migration**: For Plot2Map workflows, use the recommended two-step
+    approach:
+
+    ``` r
+    # Step 1: Get AGB and SD together (if required)
+    biomass <- getESACCIAGB(extent = bbox, year = 2010, resolution = "10km")
+    agb_map <- biomass$agb
+    sd_map <- biomass$sd
+
+    # Step 2: Get environmental covariates (no duplication)
+    covariates <- getBiasCovariates(extent = bbox, year = 2010, resolution = "10km")
+    ```
+
+  - **Backward compatibility**: Set `include_agb = TRUE` to restore
+    previous behavior
+
+### Documentation Improvements
+
+- Updated
+  [`getBiasCovariates()`](https://atnt.github.io/spatialcovariates/reference/getBiasCovariates.md)
+  documentation to clarify AGB/SD separation
+- Added `@note` explaining recommended workflow for Plot2Map users
+- Updated examples to demonstrate optimized two-step covariate fetching
+
 ## spatialcovariates 0.1.0
 
 ### Initial Release
 
-- Initial CRAN release of spatialcovariates package
 - Core covariate fetching functions:
   - [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md):
     Fetch ESA CCI Biomass AGB and SD maps

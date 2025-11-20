@@ -38,11 +38,38 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="spatialcovariates-011-development">spatialcovariates 0.1.1 (Development)<a class="anchor" aria-label="anchor" href="#spatialcovariates-011-development"></a></h2>
+<div class="section level3">
+<h3 id="function-default-changes-0-1-1">Function Default Changes<a class="anchor" aria-label="anchor" href="#function-default-changes-0-1-1"></a></h3>
+<ul><li>
+<strong><code><a href="../reference/getBiasCovariates.html">getBiasCovariates()</a></code></strong>: Changed <code>include_agb</code> parameter default from <code>TRUE</code> to <code>FALSE</code>
+<ul><li><p><strong>Rationale</strong>: Avoids duplicate downloads when users fetch AGB and SD separately using <code><a href="../reference/getESACCIAGB.html">getESACCIAGB()</a></code>, which is often required for Plot2Map workflows.</p></li>
+<li>
+<p><strong>Migration</strong>: For Plot2Map workflows, use the recommended two-step approach:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Step 1: Get AGB and SD together (if required)</span></span>
+<span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">bbox</span>, year <span class="op">=</span> <span class="fl">2010</span>, resolution <span class="op">=</span> <span class="st">"10km"</span><span class="op">)</span></span>
+<span><span class="va">agb_map</span> <span class="op">&lt;-</span> <span class="va">biomass</span><span class="op">$</span><span class="va">agb</span></span>
+<span><span class="va">sd_map</span> <span class="op">&lt;-</span> <span class="va">biomass</span><span class="op">$</span><span class="va">sd</span></span>
+<span></span>
+<span><span class="co"># Step 2: Get environmental covariates (no duplication)</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBiasCovariates.html">getBiasCovariates</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">bbox</span>, year <span class="op">=</span> <span class="fl">2010</span>, resolution <span class="op">=</span> <span class="st">"10km"</span><span class="op">)</span></span></code></pre></div>
+</li>
+<li><p><strong>Backward compatibility</strong>: Set <code>include_agb = TRUE</code> to restore previous behavior</p></li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-improvements-0-1-1">Documentation Improvements<a class="anchor" aria-label="anchor" href="#documentation-improvements-0-1-1"></a></h3>
+<ul><li>Updated <code><a href="../reference/getBiasCovariates.html">getBiasCovariates()</a></code> documentation to clarify AGB/SD separation</li>
+<li>Added <code>@note</code> explaining recommended workflow for Plot2Map users</li>
+<li>Updated examples to demonstrate optimized two-step covariate fetching</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="spatialcovariates-010">spatialcovariates 0.1.0<a class="anchor" aria-label="anchor" href="#spatialcovariates-010"></a></h2>
 <div class="section level3">
 <h3 id="initial-release-0-1-0">Initial Release<a class="anchor" aria-label="anchor" href="#initial-release-0-1-0"></a></h3>
-<ul><li>Initial CRAN release of spatialcovariates package</li>
-<li>Core covariate fetching functions:
+<ul><li>Core covariate fetching functions:
 <ul><li>
 <code><a href="../reference/getESACCIAGB.html">getESACCIAGB()</a></code>: Fetch ESA CCI Biomass AGB and SD maps</li>
 <li>

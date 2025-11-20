@@ -16,7 +16,7 @@ getBiasCovariates(
   download = TRUE,
   data_dir = "data",
   n_cores = 1,
-  include_agb = TRUE,
+  include_agb = FALSE,
   include_tcc = TRUE,
   include_height = FALSE,
   include_biome = TRUE,
@@ -64,7 +64,11 @@ getBiasCovariates(
 
 - include_agb:
 
-  Logical, include ESA CCI AGB data. Default: TRUE
+  Logical, include ESA CCI AGB data. Default: FALSE. Note: For Plot2Map
+  workflows, use
+  [`getESACCIAGB`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md)
+  separately to get both AGB and SD together, avoiding duplicate
+  downloads.
 
 - include_tcc:
 
@@ -104,11 +108,12 @@ getBiasCovariates(
 
 ## Value
 
-SpatRaster stack with named layers:
+SpatRaster stack with named layers (exact layers depend on include\_\*
+parameters):
 
 - agb:
 
-  Aboveground Biomass (Mg/ha) from ESA CCI
+  Aboveground Biomass (Mg/ha) from ESA CCI (if include_agb=TRUE)
 
 - tcc2010:
 
@@ -161,7 +166,7 @@ SpatRaster stack with named layers:
 
 ## Details
 
-\## Temporal Coverage
+**Temporal Coverage**
 
 Not all datasets have data for all years. The function uses the
 following logic:
@@ -190,7 +195,7 @@ following logic:
 - **IFL**: Available for 2000, 2013, 2016, 2020. Uses closest available
   year.
 
-\## Data Sources
+**Data Sources**
 
 Data is downloaded from public sources. Most do not require API keys:
 
@@ -232,28 +237,41 @@ library(sf)
 # Define extent for Mexico
 mexico_bbox <- c(xmin = -118, ymin = 14, xmax = -86, ymax = 33)
 
-# Fetch all covariates at 10km resolution
+# Recommended: Fetch AGB and SD separately (for Plot2Map workflows)
+biomass_data <- getESACCIAGB(
+  extent = mexico_bbox,
+  year = 2010,
+  resolution = "10km"
+)
+agb_map <- biomass_data$agb
+sd_map <- biomass_data$sd
+
+# Fetch environmental covariates (no AGB duplication)
 covariates <- getBiasCovariates(
   extent = mexico_bbox,
   year = 2010,
   resolution = "10km",
   n_cores = 4
+  # include_agb = FALSE by default
 )
 
 # Plot stack
 plot(covariates)
 
-# Access individual layers
-agb <- covariates[["agb"]]
-slope <- covariates[["slope"]]
-
 # Use in Plot2Map workflow
 library(Plot2Map)
-bias_model <- extractBiasCovariates(
+bias_data <- extractBiasCovariates(
   plot_data = my_plots,
-  map_agb_raster = covariates[["agb"]],
-  covariate_rasters = covariates[[c("height", "biome", "treecover",
-                                    "slope", "aspect", "ifl")]]
+  map_agb = agb_map,
+  map_sd = sd_map,
+  covariates = list(
+    height = covariates[["height"]],
+    biome = covariates[["biome"]],
+    treecover = covariates[["treecover2000"]],
+    slope = covariates[["slope"]],
+    aspect = covariates[["aspect"]],
+    ifl = covariates[["ifl"]]
+  )
 )
 } # }
 ```
