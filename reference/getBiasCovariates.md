@@ -210,7 +210,7 @@ Data is downloaded from public sources. Most do not require API keys:
 
 - Hansen GFC: Google Cloud Storage
 
-- SRTM: CGIAR-CSI
+- SRTM: USGS MEASURES (requires NASA Earthdata authentication)
 
 - gHM: Google Earth Engine (requires rgee + GEE account)
 

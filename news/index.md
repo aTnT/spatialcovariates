@@ -22,8 +22,66 @@
     - Old: Load full tiles → Mosaic → Crop → Multi-step aggregate
     - New: Load tile → Crop immediately → Single-pass aggregate → Mosaic
       small tiles
-  - **SRTM case**: SRTM terrain derivatives still computed at native
-    resolution before aggregation for accuracy
+  - **SRTM case**:
+    - SRTM terrain derivatives still computed at native resolution
+      before aggregation for accuracy
+
+### Data Source Changes
+
+- **SRTM data source updated** - Switched from CGIAR-CSI to USGS
+  MEASURES server
+  - **Previous source**: CGIAR-CSI SRTM v4.1 (5°×5° tiles) - server
+    discontinued
+
+  - **New source**: USGS MEASURES SRTMGL3 v003 (1°×1° tiles) - actively
+    maintained
+
+  - **URL**: <https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/>
+
+  - **File format**: Changed from `.tif` to `.hgt` (both supported by
+    terra)
+
+  - **Benefits**: Finer tile granularity (1°×1° instead of 5°×5°), less
+    unnecessary data
+
+  - **Authentication**: USGS server requires NASA Earthdata
+    authentication (free account)
+
+  - **Setup**: Install `earthdatalogin` package for seamless
+    authentication:
+
+    ``` r
+    install.packages("earthdatalogin")
+    earthdatalogin::edl_netrc(username = "your_username", password = "your_password")
+    ```
+
+  - **Alternatives**: elevation package, Google Earth Engine, or manual
+    download
+
+  - **Impact**: Tile naming changed, but no user-facing API changes -
+    [`getSRTMTerrain()`](https://atnt.github.io/spatialcovariates/reference/getSRTMTerrain.md)
+    works the same
+
+### Bug Fixes
+
+- **Fixed SRTM tile selection** - Corrected tile boundary handling in
+  [`srtm_tile_names()`](https://atnt.github.io/spatialcovariates/reference/srtm_tile_names.md)
+  - Previously selected tiles at exact bbox boundaries even when not
+    needed
+  - Example: bbox `c(-96, 18.5, -95, 19.5)` previously selected 4 tiles,
+    now correctly selects 2 tiles
+  - SRTM tiles are `[start, start+1)` (inclusive lower, exclusive upper)
+  - Significantly reduces unnecessary tile downloads and processing time
+- **Enhanced bbox validation** - Added comprehensive validation to
+  [`validate_extent()`](https://atnt.github.io/spatialcovariates/reference/validate_extent.md)
+  - Detects incorrect coordinate order (e.g.,
+    `c(xmin, xmax, ymin, ymax)` instead of `c(xmin, ymin, xmax, ymax)`)
+  - Validates coordinates are within valid ranges (longitude: -180 to
+    180, latitude: -90 to 90)
+  - Provides clear error messages indicating the likely issue
+  - **Note**: Bboxes should be specified as `c(xmin, ymin, xmax, ymax)`.
+    Named parameters are recommended:
+    `c(xmin = -75, ymin = -10, xmax = -70, ymax = -5)`
 
 ### Function Default Changes
 

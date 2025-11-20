@@ -77,22 +77,53 @@ Named list with six SpatRaster objects:
   Roughness - difference between max and min elevation in 3x3
   neighborhood
 
+## Details
+
+**Data Source**: USGS MEASURES SRTMGL3 v003 (90m resolution, 1°×1°
+tiles)
+
+**Authentication Required**: NASA Earthdata account (free)
+
+**Setup (one-time)**:
+
+    # 1. Register at https://urs.earthdata.nasa.gov/users/new
+    # 2. Install earthdatalogin package
+    install.packages("earthdatalogin")
+
+    # 3. Configure credentials
+    earthdatalogin::edl_netrc(
+      username = "your_username",
+      password = "your_password"
+    )
+
+**Alternative Sources**:
+
+- elevation package: `install.packages("elevation")`
+
+- Google Earth Engine: `ee$Image("USGS/SRTMGL1_003")` (requires rgee)
+
+- Manual download:
+  https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/2000.02.11/
+
 ## References
+
+NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 3 arc
+second \[Data set\]. NASA EOSDIS Land Processes DAAC.
+[doi:10.5067/MEaSUREs/SRTM/SRTMGL3.003](https://doi.org/10.5067/MEaSUREs/SRTM/SRTMGL3.003)
 
 Farr, T. G., Rosen, P. A., Caro, E., Crippen, R., Duren, R., Hensley,
 S., ... & Alsdorf, D. (2007). The shuttle radar topography mission.
 Reviews of Geophysics, 45(2).
 [doi:10.1029/2005RG000183](https://doi.org/10.1029/2005RG000183)
 
-Jarvis, A., Reuter, H. I., Nelson, A., & Guevara, E. (2008). Hole-filled
-SRTM for the globe Version 4. Available from the CGIAR-CSI SRTM 90m
-Database.
-
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-library(sf)
+# One-time setup (required)
+install.packages("earthdatalogin")
+earthdatalogin::edl_netrc(username = "your_username", password = "your_password")
+
 # Define extent for a region
 bbox <- c(xmin = -75, ymin = -10, xmax = -70, ymax = -5)
 

@@ -1,6 +1,6 @@
 # Generate SRTM tile names for a region
 
-SRTM uses 5x5 degree tiles
+USGS MEASURES SRTM uses 1x1 degree tiles
 
 ## Usage
 
@@ -16,4 +16,4 @@ srtm_tile_names(roi)
 
 ## Value
 
-Character vector of tile names in format "srtm_XX_YY"
+Character vector of tile names in format "N00E000" or "S00W000"

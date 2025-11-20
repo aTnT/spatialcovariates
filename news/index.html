@@ -60,7 +60,48 @@
 <li>New: Load tile → Crop immediately → Single-pass aggregate → Mosaic small tiles</li>
 </ul></li>
 <li>
-<strong>SRTM case</strong>: SRTM terrain derivatives still computed at native resolution before aggregation for accuracy</li>
+<strong>SRTM case</strong>:
+<ul><li>SRTM terrain derivatives still computed at native resolution before aggregation for accuracy</li>
+</ul></li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="data-source-changes-0-1-1">Data Source Changes<a class="anchor" aria-label="anchor" href="#data-source-changes-0-1-1"></a></h3>
+<ul><li>
+<strong>SRTM data source updated</strong> - Switched from CGIAR-CSI to USGS MEASURES server
+<ul><li><p><strong>Previous source</strong>: CGIAR-CSI SRTM v4.1 (5°×5° tiles) - server discontinued</p></li>
+<li><p><strong>New source</strong>: USGS MEASURES SRTMGL3 v003 (1°×1° tiles) - actively maintained</p></li>
+<li><p><strong>URL</strong>: <a href="https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/" class="external-link uri">https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/</a></p></li>
+<li><p><strong>File format</strong>: Changed from <code>.tif</code> to <code>.hgt</code> (both supported by terra)</p></li>
+<li><p><strong>Benefits</strong>: Finer tile granularity (1°×1° instead of 5°×5°), less unnecessary data</p></li>
+<li><p><strong>Authentication</strong>: USGS server requires NASA Earthdata authentication (free account)</p></li>
+<li>
+<p><strong>Setup</strong>: Install <code>earthdatalogin</code> package for seamless authentication:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"earthdatalogin"</span><span class="op">)</span></span>
+<span><span class="fu">earthdatalogin</span><span class="fu">::</span><span class="fu"><a href="https://boettiger-lab.github.io/earthdatalogin/reference/edl_netrc.html" class="external-link">edl_netrc</a></span><span class="op">(</span>username <span class="op">=</span> <span class="st">"your_username"</span>, password <span class="op">=</span> <span class="st">"your_password"</span><span class="op">)</span></span></code></pre></div>
+</li>
+<li><p><strong>Alternatives</strong>: elevation package, Google Earth Engine, or manual download</p></li>
+<li><p><strong>Impact</strong>: Tile naming changed, but no user-facing API changes - <code><a href="../reference/getSRTMTerrain.html">getSRTMTerrain()</a></code> works the same</p></li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-1-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-1"></a></h3>
+<ul><li>
+<strong>Fixed SRTM tile selection</strong> - Corrected tile boundary handling in <code><a href="../reference/srtm_tile_names.html">srtm_tile_names()</a></code>
+<ul><li>Previously selected tiles at exact bbox boundaries even when not needed</li>
+<li>Example: bbox <code>c(-96, 18.5, -95, 19.5)</code> previously selected 4 tiles, now correctly selects 2 tiles</li>
+<li>SRTM tiles are <code>[start, start+1)</code> (inclusive lower, exclusive upper)</li>
+<li>Significantly reduces unnecessary tile downloads and processing time</li>
+</ul></li>
+<li>
+<strong>Enhanced bbox validation</strong> - Added comprehensive validation to <code><a href="../reference/validate_extent.html">validate_extent()</a></code>
+<ul><li>Detects incorrect coordinate order (e.g., <code>c(xmin, xmax, ymin, ymax)</code> instead of <code>c(xmin, ymin, xmax, ymax)</code>)</li>
+<li>Validates coordinates are within valid ranges (longitude: -180 to 180, latitude: -90 to 90)</li>
+<li>Provides clear error messages indicating the likely issue</li>
+<li>
+<strong>Note</strong>: Bboxes should be specified as <code>c(xmin, ymin, xmax, ymax)</code>. Named parameters are recommended: <code>c(xmin = -75, ymin = -10, xmax = -70, ymax = -5)</code>
+</li>
 </ul></li>
 </ul></div>
 <div class="section level3">
@@ -70,7 +111,7 @@
 <ul><li><p><strong>Rationale</strong>: Avoids duplicate downloads when users fetch AGB and SD separately using <code><a href="../reference/getESACCIAGB.html">getESACCIAGB()</a></code>, which is often required for Plot2Map workflows.</p></li>
 <li>
 <p><strong>Migration</strong>: For Plot2Map workflows, use the recommended two-step approach:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 1: Get AGB and SD together (if required)</span></span>
 <span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">bbox</span>, year <span class="op">=</span> <span class="fl">2010</span>, resolution <span class="op">=</span> <span class="st">"10km"</span><span class="op">)</span></span>
 <span><span class="va">agb_map</span> <span class="op">&lt;-</span> <span class="va">biomass</span><span class="op">$</span><span class="va">agb</span></span>
