@@ -9,16 +9,38 @@
 validate_extent <- function(extent) {
   if (inherits(extent, "sf") || inherits(extent, "sfc")) {
     bbox <- sf::st_bbox(extent)
-    return(as.numeric(bbox))
+    bbox <- as.numeric(bbox)
   } else if (inherits(extent, "SpatVector")) {
-    bbox <- terra::ext(extent)
-    return(c(bbox$xmin, bbox$ymin, bbox$xmax, bbox$ymax))
+    bbox_ext <- terra::ext(extent)
+    bbox <- c(bbox_ext$xmin, bbox_ext$ymin, bbox_ext$xmax, bbox_ext$ymax)
   } else if (is.numeric(extent) && length(extent) == 4) {
-    names(extent) <- c("xmin", "ymin", "xmax", "ymax")
-    return(extent)
+    bbox <- extent
   } else {
     stop("'extent' must be an sf object, SpatVector, or numeric vector of length 4 (xmin, ymin, xmax, ymax)")
   }
+
+  # Validate bbox is in correct order
+  if (bbox[1] >= bbox[3]) {
+    stop(sprintf("Invalid extent: xmin (%.2f) must be < xmax (%.2f). Did you provide coordinates in the wrong order?",
+                bbox[1], bbox[3]))
+  }
+  if (bbox[2] >= bbox[4]) {
+    stop(sprintf("Invalid extent: ymin (%.2f) must be < ymax (%.2f). Did you provide coordinates in the wrong order?",
+                bbox[2], bbox[4]))
+  }
+
+  # Validate coordinates are within valid ranges
+  if (bbox[1] < -180 || bbox[3] > 180) {
+    stop(sprintf("Invalid longitude: must be between -180 and 180 (got xmin=%.2f, xmax=%.2f)",
+                bbox[1], bbox[3]))
+  }
+  if (bbox[2] < -90 || bbox[4] > 90) {
+    stop(sprintf("Invalid latitude: must be between -90 and 90 (got ymin=%.2f, ymax=%.2f)",
+                bbox[2], bbox[4]))
+  }
+
+  names(bbox) <- c("xmin", "ymin", "xmax", "ymax")
+  return(bbox)
 }
 
 #' Parse resolution string to meters

@@ -2,31 +2,40 @@
 
 #' Generate SRTM tile names for a region
 #'
-#' SRTM uses 5x5 degree tiles
+#' USGS MEASURES SRTM uses 1x1 degree tiles
 #'
 #' @param roi sf object, SpatVector, or numeric bbox
 #'
-#' @return Character vector of tile names in format "srtm_XX_YY"
+#' @return Character vector of tile names in format "N00E000" or "S00W000"
 #' @keywords internal
 srtm_tile_names <- function(roi) {
   bbox <- validate_extent(roi)
 
-  # SRTM uses 5x5 degree tiles
-  # Need to include tiles that overlap the bbox, not just floor of max values
-  lon_min <- floor(bbox[1] / 5) * 5
-  lon_max <- floor(bbox[3] / 5) * 5
-  # If max longitude is not on tile boundary, we need the next tile
-  if (bbox[3] > lon_max && bbox[3] <= lon_max + 5) lon_max <- lon_max + 0  # Already have it
+  # USGS MEASURES SRTM uses 1x1 degree tiles
+  # Tiles are named by their lower-left corner (e.g., N18W096 covers 18-19N, 96-97W)
+  # Tiles are [start, start+1) - inclusive at lower bound, exclusive at upper bound
 
-  lat_min <- floor(bbox[2] / 5) * 5
-  lat_max <- floor(bbox[4] / 5) * 5
-  # If max latitude extends beyond the tile, need the next tile
-  if (bbox[4] > lat_max) lat_max <- lat_max + 5
+  # Calculate tile range
+  lon_min <- floor(bbox[1])
+  lat_min <- floor(bbox[2])
 
-  lons <- seq(lon_min, lon_max, by = 5)
-  lats <- seq(lat_min, lat_max, by = 5)
+  # For max coordinates, use ceiling - 1 to get the tile containing the max point
+  # This correctly handles boundary cases where max is exactly on a tile edge
+  lon_max <- ceiling(bbox[3]) - 1
+  lat_max <- ceiling(bbox[4]) - 1
+
+  # Generate all tile coordinates
+  lons <- seq(lon_min, lon_max, by = 1)
+  lats <- seq(lat_min, lat_max, by = 1)
 
   tile_grid <- expand.grid(lon = lons, lat = lats)
+
+  # Safety check: shouldn't need more than ~10000 tiles for reasonable extents
+  if (nrow(tile_grid) > 10000) {
+    warning(sprintf("SRTM tile calculation returned %d tiles for extent [%.2f, %.2f, %.2f, %.2f]. ",
+                   nrow(tile_grid), bbox[1], bbox[2], bbox[3], bbox[4]),
+            "This seems excessive. Please verify your extent is correct.")
+  }
 
   tile_names <- character(nrow(tile_grid))
 
@@ -34,13 +43,13 @@ srtm_tile_names <- function(roi) {
     lon <- tile_grid$lon[i]
     lat <- tile_grid$lat[i]
 
-    # SRTM tile naming: srtm_XX_YY where XX and YY are tile indices
-    # Longitude: -180 to 180, divided by 5, offset by 36 (so -180 = 01, 0 = 37)
-    # Latitude: -60 to 60, divided by 5, offset by 13 (so -60 = 01, 0 = 13)
-    lon_idx <- (lon / 5) + 37
-    lat_idx <- 13 - (lat / 5)
+    # USGS MEASURES naming: N/S + lat + E/W + lon (e.g., N18W096)
+    lat_letter <- if (lat >= 0) "N" else "S"
+    lon_letter <- if (lon >= 0) "E" else "W"
 
-    tile_names[i] <- sprintf("srtm_%02d_%02d", lon_idx, lat_idx)
+    tile_names[i] <- sprintf("%s%02d%s%03d",
+                            lat_letter, abs(lat),
+                            lon_letter, abs(lon))
   }
 
   return(unique(tile_names))
@@ -48,7 +57,24 @@ srtm_tile_names <- function(roi) {
 
 #' Download SRTM DEM tiles
 #'
-#' Downloads SRTM Version 4.1 tiles from CGIAR-CSI or OpenTopography.
+#' Downloads SRTM 90m (SRTMGL3 v003) tiles from USGS MEASURES server.
+#'
+#' @details
+#' \strong{Authentication}: USGS MEASURES server requires NASA Earthdata authentication.
+#'
+#' \strong{Setup (recommended)}: Install earthdatalogin package and configure credentials:
+#' \preformatted{
+#' install.packages("earthdatalogin")
+#' earthdatalogin::edl_netrc(username = "your_username", password = "your_password")
+#' }
+#' Register for free at: https://urs.earthdata.nasa.gov/users/new
+#'
+#' \strong{Alternative Sources}:
+#' \itemize{
+#' \item Manual Download: Download tiles from https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/2000.02.11/
+#' \item Google Earth Engine: Use \code{ee$Image("USGS/SRTMGL1_003")} if you have rgee configured
+#' \item elevation package: R package with alternative SRTM access (install.packages("elevation"))
+#' }
 #'
 #' @param roi sf object, SpatVector, or NULL
 #' @param output_folder Character, directory to save files (default: "data/SRTM")
@@ -73,14 +99,25 @@ download_srtm_dem <- function(roi = NULL,
 
   tile_names <- srtm_tile_names(roi)
 
-  # CGIAR-CSI SRTM v4.1 base URL
-  base_url <- "https://srtm.csi.cgiar.org/wp-content/uploads/files/srtm_5x5/TIFF/"
+  # USGS MEASURES SRTM v3 (90m) base URL
+  base_url <- "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/2000.02.11/"
+
+  # Check if earthdatalogin is available for authentication
+  has_earthdatalogin <- requireNamespace("earthdatalogin", quietly = TRUE)
 
   message(sprintf("Attempting to download %d SRTM DEM tile(s)...", length(tile_names)))
 
+  if (has_earthdatalogin) {
+    message("Using earthdatalogin for NASA Earthdata authentication")
+  } else {
+    message("Note: Install 'earthdatalogin' package for automatic authentication")
+    message("  install.packages('earthdatalogin')")
+    message("  earthdatalogin::edl_netrc(username, password)")
+  }
+
   # Check which files already exist
-  tif_files <- file.path(output_folder, paste0(tile_names, ".tif"))
-  existing_files <- file.exists(tif_files)
+  hgt_files <- file.path(output_folder, paste0(tile_names, ".hgt"))
+  existing_files <- file.exists(hgt_files)
 
   if (any(existing_files)) {
     message(sprintf("%d file(s) already exist - skipping download", sum(existing_files)))
@@ -88,17 +125,28 @@ download_srtm_dem <- function(roi = NULL,
 
   download_single <- function(i) {
     tile_name <- tile_names[i]
-    file_url <- paste0(base_url, tile_name, ".zip")
-    zip_file <- file.path(output_folder, paste0(tile_name, ".zip"))
-    tif_file <- tif_files[i]
+    file_url <- paste0(base_url, tile_name, ".SRTMGL3.hgt.zip")
+    zip_file <- file.path(output_folder, paste0(tile_name, ".SRTMGL3.hgt.zip"))
+    hgt_file <- hgt_files[i]
 
-    # Skip if TIF already exists (checked earlier, but double-check)
-    if (file.exists(tif_file)) {
-      return(tif_file)
+    # Skip if HGT already exists
+    if (file.exists(hgt_file)) {
+      return(hgt_file)
     }
 
-    # Download zip
-    success <- download_with_retry(file_url, zip_file, timeout = timeout, quiet = TRUE)
+    # Download zip using earthdatalogin if available, otherwise fall back
+    success <- FALSE
+    if (has_earthdatalogin) {
+      tryCatch({
+        earthdatalogin::edl_download(file_url, dest = zip_file)
+        success <- file.exists(zip_file)
+      }, error = function(e) {
+        # Fall back to regular download
+        success <- download_with_retry(file_url, zip_file, timeout = timeout, quiet = TRUE)
+      })
+    } else {
+      success <- download_with_retry(file_url, zip_file, timeout = timeout, quiet = TRUE)
+    }
 
     if (!success) {
       warning(sprintf("Failed to download %s", tile_name))
@@ -110,10 +158,10 @@ download_srtm_dem <- function(roi = NULL,
       utils::unzip(zip_file, exdir = output_folder)
       unlink(zip_file)  # Remove zip after extraction
 
-      if (file.exists(tif_file)) {
-        return(tif_file)
+      if (file.exists(hgt_file)) {
+        return(hgt_file)
       } else {
-        warning(sprintf("Expected file %s not found after extraction", tif_file))
+        warning(sprintf("Expected file %s not found after extraction", hgt_file))
         return(NULL)
       }
     }, error = function(e) {
@@ -127,7 +175,7 @@ download_srtm_dem <- function(roi = NULL,
     cl <- parallel::makeCluster(n_cores)
     on.exit(parallel::stopCluster(cl), add = TRUE)
     # Export variables to cluster workers
-    parallel::clusterExport(cl, c("tile_names", "tif_files", "base_url", "output_folder", "timeout"),
+    parallel::clusterExport(cl, c("tile_names", "hgt_files", "base_url", "output_folder", "timeout", "has_earthdatalogin"),
                           envir = environment())
     parallel::clusterExport(cl, "download_with_retry",
                           envir = asNamespace("spatialcovariates"))
@@ -140,9 +188,25 @@ download_srtm_dem <- function(roi = NULL,
   downloaded_files <- downloaded_files[!sapply(downloaded_files, is.null)]
 
   if (length(downloaded_files) == 0) {
-    stop("Failed to download any SRTM tiles. ",
-         "The server may be unavailable. ",
-         "Please check https://srtm.csi.cgiar.org for availability.")
+    if (has_earthdatalogin) {
+      stop("Failed to download any SRTM tiles.\n\n",
+           "Please configure earthdatalogin authentication:\n",
+           "  earthdatalogin::edl_netrc(username = 'your_username', password = 'your_password')\n\n",
+           "Register for free at: https://urs.earthdata.nasa.gov/users/new\n\n",
+           "Required tiles: ", paste(tile_names, collapse=", "))
+    } else {
+      stop("Failed to download any SRTM tiles.\n\n",
+           "The USGS MEASURES server requires NASA Earthdata authentication.\n\n",
+           "Recommended: Install earthdatalogin package:\n",
+           "  install.packages('earthdatalogin')\n",
+           "  earthdatalogin::edl_netrc(username = 'your_username', password = 'your_password')\n",
+           "  Register at: https://urs.earthdata.nasa.gov/users/new\n\n",
+           "Alternatives:\n",
+           "1. Manual Download: Download tiles from https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/2000.02.11/\n",
+           "   Required tiles: ", paste(tile_names, collapse=", "), "\n",
+           "2. Use elevation package: install.packages('elevation')\n",
+           "3. Use Google Earth Engine (if configured): ee$Image('USGS/SRTMGL1_003')")
+    }
   }
 
   message(sprintf("Successfully downloaded %d file(s)", length(downloaded_files)))
@@ -266,6 +330,31 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
 #' Terrain Ruggedness Index (TRI), Topographic Position Index (TPI) and roughness
 #' at the target resolution.
 #'
+#' @details
+#' \strong{Data Source}: USGS MEASURES SRTMGL3 v003 (90m resolution, 1°×1° tiles)
+#'
+#' \strong{Authentication Required}: NASA Earthdata account (free)
+#'
+#' \strong{Setup (one-time)}:
+#' \preformatted{
+#' # 1. Register at https://urs.earthdata.nasa.gov/users/new
+#' # 2. Install earthdatalogin package
+#' install.packages("earthdatalogin")
+#'
+#' # 3. Configure credentials
+#' earthdatalogin::edl_netrc(
+#'   username = "your_username",
+#'   password = "your_password"
+#' )
+#' }
+#'
+#' \strong{Alternative Sources}:
+#' \itemize{
+#' \item elevation package: \code{install.packages("elevation")}
+#' \item Google Earth Engine: \code{ee$Image("USGS/SRTMGL1_003")} (requires rgee)
+#' \item Manual download: https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/2000.02.11/
+#' }
+#'
 #' @param extent sf object, SpatVector, or numeric bbox vector (xmin, ymin, xmax, ymax)
 #'   specifying the region of interest
 #' @param resolution Character, target resolution (e.g., "10km", "1000m"). Default: "10km"
@@ -289,7 +378,10 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
 #'
 #' @examples
 #' \dontrun{
-#' library(sf)
+#' # One-time setup (required)
+#' install.packages("earthdatalogin")
+#' earthdatalogin::edl_netrc(username = "your_username", password = "your_password")
+#'
 #' # Define extent for a region
 #' bbox <- c(xmin = -75, ymin = -10, xmax = -70, ymax = -5)
 #'
@@ -306,12 +398,12 @@ process_srtm_terrain <- function(files, extent, resolution = "10km", outdir = NU
 #' }
 #'
 #' @references
+#' NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 3 arc second [Data set].
+#' NASA EOSDIS Land Processes DAAC. \doi{10.5067/MEaSUREs/SRTM/SRTMGL3.003}
+#'
 #' Farr, T. G., Rosen, P. A., Caro, E., Crippen, R., Duren, R., Hensley, S., ...
 #' & Alsdorf, D. (2007). The shuttle radar topography mission. Reviews of Geophysics, 45(2).
 #' \doi{10.1029/2005RG000183}
-#'
-#' Jarvis, A., Reuter, H. I., Nelson, A., & Guevara, E. (2008). Hole-filled SRTM for the
-#' globe Version 4. Available from the CGIAR-CSI SRTM 90m Database.
 getSRTMTerrain <- function(extent,
                           resolution = "10km",
                           outdir = NULL,
@@ -333,7 +425,7 @@ getSRTMTerrain <- function(extent,
     # List existing tiles
     message("Using existing tiles from ", tiles_dir)
     tile_names <- srtm_tile_names(extent)
-    files <- file.path(tiles_dir, paste0(tile_names, ".tif"))
+    files <- file.path(tiles_dir, paste0(tile_names, ".hgt"))
     files <- files[file.exists(files)]
 
     if (length(files) == 0) {

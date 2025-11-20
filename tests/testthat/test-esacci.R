@@ -28,7 +28,7 @@ test_that("validate_esacci_args enforces version-year constraints", {
 })
 
 test_that("esacci_tile_names generates correct format", {
-  bbox <- c(-75, -10, -70, -5)
+  bbox <- c(-75, -10, -70, -5)  # xmin, ymin, xmax, ymax
   tiles <- esacci_tile_names(bbox, 2010, "v3.0", type = "agb")
 
   expect_true(length(tiles) > 0)
@@ -38,7 +38,7 @@ test_that("esacci_tile_names generates correct format", {
 })
 
 test_that("esacci_tile_names generates SD filenames correctly", {
-  bbox <- c(-75, -10, -70, -5)
+  bbox <- c(-75, -10, -70, -5)  # xmin, ymin, xmax, ymax
   tiles <- esacci_tile_names(bbox, 2010, "v3.0", type = "sd")
 
   expect_true(all(grepl("AGB_SD", tiles)))

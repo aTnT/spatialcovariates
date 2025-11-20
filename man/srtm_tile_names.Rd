@@ -10,9 +10,9 @@ srtm_tile_names(roi)
 \item{roi}{sf object, SpatVector, or numeric bbox}
 }
 \value{
-Character vector of tile names in format "srtm_XX_YY"
+Character vector of tile names in format "N00E000" or "S00W000"
 }
 \description{
-SRTM uses 5x5 degree tiles
+USGS MEASURES SRTM uses 1x1 degree tiles
 }
 \keyword{internal}

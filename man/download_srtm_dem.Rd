@@ -24,6 +24,23 @@ download_srtm_dem(
 Character vector of downloaded file paths
 }
 \description{
-Downloads SRTM Version 4.1 tiles from CGIAR-CSI or OpenTopography.
+Downloads SRTM 90m (SRTMGL3 v003) tiles from USGS MEASURES server.
+}
+\details{
+\strong{Authentication}: USGS MEASURES server requires NASA Earthdata authentication.
+
+\strong{Setup (recommended)}: Install earthdatalogin package and configure credentials:
+\preformatted{
+install.packages("earthdatalogin")
+earthdatalogin::edl_netrc(username = "your_username", password = "your_password")
+}
+Register for free at: https://urs.earthdata.nasa.gov/users/new
+
+\strong{Alternative Sources}:
+\itemize{
+\item Manual Download: Download tiles from https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/2000.02.11/
+\item Google Earth Engine: Use \code{ee$Image("USGS/SRTMGL1_003")} if you have rgee configured
+\item elevation package: R package with alternative SRTM access (install.packages("elevation"))
+}
 }
 \keyword{internal}

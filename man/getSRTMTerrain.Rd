@@ -44,9 +44,37 @@ Downloads SRTM DEM data and computes terrain derivatives such as slope, aspect,
 Terrain Ruggedness Index (TRI), Topographic Position Index (TPI) and roughness
 at the target resolution.
 }
+\details{
+\strong{Data Source}: USGS MEASURES SRTMGL3 v003 (90m resolution, 1°×1° tiles)
+
+\strong{Authentication Required}: NASA Earthdata account (free)
+
+\strong{Setup (one-time)}:
+\preformatted{
+# 1. Register at https://urs.earthdata.nasa.gov/users/new
+# 2. Install earthdatalogin package
+install.packages("earthdatalogin")
+
+# 3. Configure credentials
+earthdatalogin::edl_netrc(
+  username = "your_username",
+  password = "your_password"
+)
+}
+
+\strong{Alternative Sources}:
+\itemize{
+\item elevation package: \code{install.packages("elevation")}
+\item Google Earth Engine: \code{ee$Image("USGS/SRTMGL1_003")} (requires rgee)
+\item Manual download: https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL3.003/2000.02.11/
+}
+}
 \examples{
 \dontrun{
-library(sf)
+# One-time setup (required)
+install.packages("earthdatalogin")
+earthdatalogin::edl_netrc(username = "your_username", password = "your_password")
+
 # Define extent for a region
 bbox <- c(xmin = -75, ymin = -10, xmax = -70, ymax = -5)
 
@@ -64,10 +92,10 @@ plot(terrain$roughness, main = "Roughness")
 
 }
 \references{
+NASA JPL (2013). NASA Shuttle Radar Topography Mission Global 3 arc second [Data set].
+NASA EOSDIS Land Processes DAAC. \doi{10.5067/MEaSUREs/SRTM/SRTMGL3.003}
+
 Farr, T. G., Rosen, P. A., Caro, E., Crippen, R., Duren, R., Hensley, S., ...
 & Alsdorf, D. (2007). The shuttle radar topography mission. Reviews of Geophysics, 45(2).
 \doi{10.1029/2005RG000183}
-
-Jarvis, A., Reuter, H. I., Nelson, A., & Guevara, E. (2008). Hole-filled SRTM for the
-globe Version 4. Available from the CGIAR-CSI SRTM 90m Database.
 }

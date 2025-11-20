@@ -114,7 +114,7 @@ Data is downloaded from public sources. Most do not require API keys:
   \item ETH Canopy Height 2020: Google Earth Engine (requires rgee + GEE account)
   \item Dinerstein: RESOLVE Ecoregions
   \item Hansen GFC: Google Cloud Storage
-  \item SRTM: CGIAR-CSI
+  \item SRTM: USGS MEASURES (requires NASA Earthdata authentication)
   \item gHM: Google Earth Engine (requires rgee + GEE account)
   \item IFL: Intact Forests
 }
