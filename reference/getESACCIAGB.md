@@ -8,13 +8,13 @@ Standard Deviation (SD) maps for a specified region, year, and version.
 ``` r
 getESACCIAGB(
   extent,
-  year = 2010,
-  version = "v3.0",
+  esacci_biomass_year = 2010,
+  esacci_biomass_version = "latest",
   resolution = "10km",
   outdir = NULL,
   download = TRUE,
-  tiles_dir = "data/ESACCI-BIOMASS",
-  n_cores = 1
+  esacci_folder = "data/ESACCI-BIOMASS",
+  n_cores = parallel::detectCores() - 1
 )
 ```
 
@@ -25,13 +25,14 @@ getESACCIAGB(
   sf object, SpatVector, or numeric bbox vector (xmin, ymin, xmax, ymax)
   specifying the region of interest
 
-- year:
+- esacci_biomass_year:
 
-  Numeric or "latest", year to fetch (2010, 2015-2022). Default: 2010
+  Numeric or "latest", year to fetch (2007, 2010, 2015-2022). Default:
+  2010
 
-- version:
+- esacci_biomass_version:
 
-  Character or "latest", ESA CCI version (v2.0-v6.0). Default: "v3.0"
+  Character or "latest", ESA CCI version (v2.0-v6.0). Default: "latest"
 
 - resolution:
 
@@ -46,14 +47,15 @@ getESACCIAGB(
   Logical, whether to download tiles (TRUE) or use existing. Default:
   TRUE
 
-- tiles_dir:
+- esacci_folder:
 
   Character, directory containing existing tiles (if download=FALSE).
   Default: "data/ESACCI-BIOMASS"
 
 - n_cores:
 
-  Integer, number of cores for parallel download. Default: 1
+  Integer, number of cores for parallel download. Default:
+  parallel::detectCores() - 1
 
 ## Value
 
@@ -63,11 +65,11 @@ available, sd will be NULL.
 
 ## References
 
-Santoro, M., & Cartus, O. (2023). ESA Biomass Climate Change Initiative
+Santoro, M., & Cartus, O. (2025). ESA Biomass Climate Change Initiative
 (Biomass_cci): Global datasets of forest above-ground biomass for the
-years 2010, 2017, 2018, 2019 and 2020. NERC EDS Centre for Environmental
+years 2007, 2010, 2015-2022, v6.0. NERC EDS Centre for Environmental
 Data Analysis.
-[doi:10.5285/5f331c418e9f4935b8eb1b836f8a91b8](https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8)
+[doi:10.5285/95913ffb6467447ca72c4e9d8cf30501](https://doi.org/10.5285/95913ffb6467447ca72c4e9d8cf30501)
 
 ## Examples
 
@@ -78,7 +80,7 @@ library(sf)
 mexico_bbox <- c(xmin = -118, ymin = 14, xmax = -86, ymax = 33)
 
 # Fetch ESA CCI Biomass for 2010
-biomass <- getESACCIAGB(mexico_bbox, year = 2010, resolution = "10km")
+biomass <- getESACCIAGB(mexico_bbox, esacci_biomass_year = 2010, resolution = "10km")
 
 # Access AGB and SD
 plot(biomass$agb, main = "AGB 2010")

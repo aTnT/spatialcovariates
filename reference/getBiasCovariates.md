@@ -240,7 +240,8 @@ mexico_bbox <- c(xmin = -118, ymin = 14, xmax = -86, ymax = 33)
 # Recommended: Fetch AGB and SD separately (for Plot2Map workflows)
 biomass_data <- getESACCIAGB(
   extent = mexico_bbox,
-  year = 2010,
+  esacci_biomass_year = 2010,
+  esacci_biomass_version = "latest",
   resolution = "10km"
 )
 agb_map <- biomass_data$agb

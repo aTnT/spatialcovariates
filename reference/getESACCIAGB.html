@@ -49,13 +49,13 @@ Standard Deviation (SD) maps for a specified region, year, and version.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getESACCIAGB</span><span class="op">(</span></span>
 <span>  <span class="va">extent</span>,</span>
-<span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
-<span>  version <span class="op">=</span> <span class="st">"v3.0"</span>,</span>
+<span>  esacci_biomass_year <span class="op">=</span> <span class="fl">2010</span>,</span>
+<span>  esacci_biomass_version <span class="op">=</span> <span class="st">"latest"</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span>,</span>
 <span>  outdir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  download <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  tiles_dir <span class="op">=</span> <span class="st">"data/ESACCI-BIOMASS"</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="fl">1</span></span>
+<span>  esacci_folder <span class="op">=</span> <span class="st">"data/ESACCI-BIOMASS"</span>,</span>
+<span>  n_cores <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -68,12 +68,12 @@ Standard Deviation (SD) maps for a specified region, year, and version.</p>
 specifying the region of interest</p></dd>
 
 
-<dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
-<dd><p>Numeric or "latest", year to fetch (2010, 2015-2022). Default: 2010</p></dd>
+<dt id="arg-esacci-biomass-year">esacci_biomass_year<a class="anchor" aria-label="anchor" href="#arg-esacci-biomass-year"></a></dt>
+<dd><p>Numeric or "latest", year to fetch (2007, 2010, 2015-2022). Default: 2010</p></dd>
 
 
-<dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
-<dd><p>Character or "latest", ESA CCI version (v2.0-v6.0). Default: "v3.0"</p></dd>
+<dt id="arg-esacci-biomass-version">esacci_biomass_version<a class="anchor" aria-label="anchor" href="#arg-esacci-biomass-version"></a></dt>
+<dd><p>Character or "latest", ESA CCI version (v2.0-v6.0). Default: "latest"</p></dd>
 
 
 <dt id="arg-resolution">resolution<a class="anchor" aria-label="anchor" href="#arg-resolution"></a></dt>
@@ -88,13 +88,13 @@ specifying the region of interest</p></dd>
 <dd><p>Logical, whether to download tiles (TRUE) or use existing. Default: TRUE</p></dd>
 
 
-<dt id="arg-tiles-dir">tiles_dir<a class="anchor" aria-label="anchor" href="#arg-tiles-dir"></a></dt>
+<dt id="arg-esacci-folder">esacci_folder<a class="anchor" aria-label="anchor" href="#arg-esacci-folder"></a></dt>
 <dd><p>Character, directory containing existing tiles (if download=FALSE).
 Default: "data/ESACCI-BIOMASS"</p></dd>
 
 
 <dt id="arg-n-cores">n_cores<a class="anchor" aria-label="anchor" href="#arg-n-cores"></a></dt>
-<dd><p>Integer, number of cores for parallel download. Default: 1</p></dd>
+<dd><p>Integer, number of cores for parallel download. Default: parallel::detectCores() - 1</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -104,9 +104,9 @@ Default: "data/ESACCI-BIOMASS"</p></dd>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Santoro, M., &amp; Cartus, O. (2023). ESA Biomass Climate Change Initiative (Biomass_cci):
-Global datasets of forest above-ground biomass for the years 2010, 2017, 2018, 2019 and 2020.
-NERC EDS Centre for Environmental Data Analysis. <a href="https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8" class="external-link">doi:10.5285/5f331c418e9f4935b8eb1b836f8a91b8</a></p>
+    <p>Santoro, M., &amp; Cartus, O. (2025). ESA Biomass Climate Change Initiative (Biomass_cci):
+Global datasets of forest above-ground biomass for the years 2007, 2010, 2015-2022, v6.0.
+NERC EDS Centre for Environmental Data Analysis. <a href="https://doi.org/10.5285/95913ffb6467447ca72c4e9d8cf30501" class="external-link">doi:10.5285/95913ffb6467447ca72c4e9d8cf30501</a></p>
     </div>
 
     <div class="section level2">
@@ -117,7 +117,7 @@ NERC EDS Centre for Environmental Data Analysis. <a href="https://doi.org/10.528
 <span class="r-in"><span><span class="va">mexico_bbox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="op">-</span><span class="fl">118</span>, ymin <span class="op">=</span> <span class="fl">14</span>, xmax <span class="op">=</span> <span class="op">-</span><span class="fl">86</span>, ymax <span class="op">=</span> <span class="fl">33</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fetch ESA CCI Biomass for 2010</span></span></span>
-<span class="r-in"><span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu">getESACCIAGB</span><span class="op">(</span><span class="va">mexico_bbox</span>, year <span class="op">=</span> <span class="fl">2010</span>, resolution <span class="op">=</span> <span class="st">"10km"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu">getESACCIAGB</span><span class="op">(</span><span class="va">mexico_bbox</span>, esacci_biomass_year <span class="op">=</span> <span class="fl">2010</span>, resolution <span class="op">=</span> <span class="st">"10km"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Access AGB and SD</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">biomass</span><span class="op">$</span><span class="va">agb</span>, main <span class="op">=</span> <span class="st">"AGB 2010"</span><span class="op">)</span></span></span>

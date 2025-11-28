@@ -90,7 +90,7 @@ bias_data <- extractBiasCovariates(
 
 | Covariate                  | Function                                                                                           | Source                   | Resolution | Years                        |
 |----------------------------|----------------------------------------------------------------------------------------------------|--------------------------|------------|------------------------------|
-| **AGB & SD**               | [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md)             | ESA CCI Biomass          | 100m       | 2010, 2017-2022              |
+| **AGB & SD**               | [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md)             | ESA CCI Biomass v6.0     | 100m       | 2007, 2010, 2015-2022        |
 | **Tree Canopy Cover 2010** | [`getGLADTCC2010()`](https://atnt.github.io/spatialcovariates/reference/getGLADTCC2010.md)         | GLAD TCC 2010            | 30m        | 2010 (static)                |
 | **Canopy Height 2020**     | [`getETHCanopyHeight()`](https://atnt.github.io/spatialcovariates/reference/getETHCanopyHeight.md) | ETH Global Canopy Height | 10m        | 2020 (static)                |
 | **Biomes**                 | [`getDinersteinBiome()`](https://atnt.github.io/spatialcovariates/reference/getDinersteinBiome.md) | RESOLVE Ecoregions       | Vector     | 2017 (static)                |
@@ -107,14 +107,22 @@ bias_data <- extractBiasCovariates(
 # Fetch AGB and SD for 2010
 biomass <- getESACCIAGB(
   extent = mexico_bbox,
-  year = 2010,
-  version = "v3.0",
+  esacci_biomass_year = 2010,
+  esacci_biomass_version = "latest",  # uses v6.0 by default
   resolution = "10km"
 )
 
 # Access individual layers
 agb <- biomass$agb    # Aboveground biomass (Mg/ha)
 sd <- biomass$sd      # Standard deviation (Mg/ha)
+
+# Use specific version if needed
+biomass_2007 <- getESACCIAGB(
+  extent = mexico_bbox,
+  esacci_biomass_year = 2007, 
+  esacci_biomass_version = "v6.0",
+  resolution = "10km"
+)
 ```
 
 ### Tree Canopy Cover 2010 (GLAD)
@@ -312,11 +320,14 @@ covariates <- getBiasCovariates(extent = bbox)
 
 ### ESA CCI Biomass
 
-Santoro, M., & Cartus, O. (2023). ESA Biomass Climate Change Initiative
+Santoro, M., & Cartus, O. (2025). ESA Biomass Climate Change Initiative
 (Biomass_cci): Global datasets of forest above-ground biomass for the
-years 2010, 2017, 2018, 2019 and 2020. NERC EDS Centre for Environmental
-Data Analysis.
-<https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8>
+years 2007, 2010, 2015, 2016, 2017, 2018, 2019, 2020, 2021 and 2022,
+v6.0. NERC EDS Centre for Environmental Data Analysis.
+<https://doi.org/10.5285/95913ffb6467447ca72c4e9d8cf30501>
+
+**Latest Version**: v6.0 (April 2025) - Adds year 2007 and 2022,
+improved calibration with extended ICESat-2 observations
 
 ### GLAD Tree Canopy Cover 2010
 
@@ -390,16 +401,16 @@ frontiers of wilderness: Tracking loss of intact forest landscapes from
 Not all datasets cover all years. The package handles temporal
 mismatches as follows:
 
-| Dataset                   | Available Years        | Logic                                            |
-|---------------------------|------------------------|--------------------------------------------------|
-| ESA CCI AGB               | 2010, 2017-2022        | Uses specified year if available, otherwise 2010 |
-| GLAD TCC 2010             | 2010                   | Static (year 2010 tree canopy cover)             |
-| ETH Canopy Height 2020    | 2020                   | Static (year 2020 canopy height, requires rgee)  |
-| Dinerstein Biomes         | 2017                   | Static                                           |
-| Hansen Tree Cover         | 2000                   | Static (year 2000 baseline)                      |
-| SRTM Terrain              | Static                 | No temporal variation (provides 6 metrics)       |
-| Global Human Modification | 2016                   | Static                                           |
-| IFL                       | 2000, 2013, 2016, 2020 | Uses closest available year                      |
+| Dataset                   | Available Years              | Logic                                            |
+|---------------------------|------------------------------|--------------------------------------------------|
+| ESA CCI AGB               | 2007, 2010, 2015-2022 (v6.0) | Uses specified year if available, otherwise 2010 |
+| GLAD TCC 2010             | 2010                         | Static (year 2010 tree canopy cover)             |
+| ETH Canopy Height 2020    | 2020                         | Static (year 2020 canopy height, requires rgee)  |
+| Dinerstein Biomes         | 2017                         | Static                                           |
+| Hansen Tree Cover         | 2000                         | Static (year 2000 baseline)                      |
+| SRTM Terrain              | Static                       | No temporal variation (provides 6 metrics)       |
+| Global Human Modification | 2016                         | Static                                           |
+| IFL                       | 2000, 2013, 2016, 2020       | Uses closest available year                      |
 
 ## Dependencies
 

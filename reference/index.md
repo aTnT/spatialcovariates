@@ -2,6 +2,10 @@
 
 ## All functions
 
+- [`ESACCIAGBtileNames()`](https://atnt.github.io/spatialcovariates/reference/ESACCIAGBtileNames.md)
+  : Generate ESA-CCI AGB tile names (Plot2Map compatible)
+- [`download_esacci_biomass()`](https://atnt.github.io/spatialcovariates/reference/download_esacci_biomass.md)
+  : Download ESA CCI Biomass data from CEDA Archive
 - [`getBiasCovariates()`](https://atnt.github.io/spatialcovariates/reference/getBiasCovariates.md)
   : Fetch and Stack All Bias Covariates for Plot2Map
 - [`getDinersteinBiome()`](https://atnt.github.io/spatialcovariates/reference/getDinersteinBiome.md)

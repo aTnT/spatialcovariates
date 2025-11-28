@@ -2,6 +2,71 @@
 
 ## spatialcovariates 0.1.1 (Development)
 
+### Breaking Changes
+
+- **ESA CCI Biomass functions now Plot2Map compatible** - Parameter
+  names updated for consistency
+  - **Affected functions**:
+    [`getESACCIAGB()`](https://atnt.github.io/spatialcovariates/reference/getESACCIAGB.md),
+    [`download_esacci_biomass()`](https://atnt.github.io/spatialcovariates/reference/download_esacci_biomass.md),
+    [`validate_esacci_biomass_args()`](https://atnt.github.io/spatialcovariates/reference/validate_esacci_biomass_args.md),
+    new
+    [`ESACCIAGBtileNames()`](https://atnt.github.io/spatialcovariates/reference/ESACCIAGBtileNames.md)
+
+  - **Parameter changes**:
+
+    - `year` → `esacci_biomass_year`
+    - `version` → `esacci_biomass_version`
+    - `tiles_dir`/`output_folder` → `esacci_folder`
+
+  - **Default version changed**: `"v3.0"` → `"latest"` (now uses v6.0)
+
+  - **Reason**: Full compatibility with Plot2Map package for future
+    integration
+
+  - **Migration**: Update parameter names in existing code:
+
+    ``` r
+    # Old (v0.1.0)
+    biomass <- getESACCIAGB(extent, year = 2010, version = "v3.0")
+
+    # New (v0.1.1+)
+    biomass <- getESACCIAGB(extent, esacci_biomass_year = 2010, esacci_biomass_version = "latest")
+    ```
+
+### New Features
+
+- **ESA CCI Biomass v6.0 support** - Added latest ESA CCI Biomass
+  dataset
+  - **New years**: 2007 (new!), 2010, 2015-2022 (2022 is new!)
+  - **Previous versions**: 2010, 2017-2022
+  - **Improvements in v6.0**:
+    - Extended temporal coverage (2007, 2022)
+    - Improved calibration with extended ICESat-2 observations
+    - Refined cost function to reduce biases between time periods
+  - **Reference**: Santoro, M., & Cartus, O. (2025). ESA Biomass Climate
+    Change Initiative (Biomass_cci): Global datasets of forest
+    above-ground biomass for the years 2007, 2010, 2015-2022, v6.0.
+    <https://doi.org/10.5285/95913ffb6467447ca72c4e9d8cf30501>
+- **SRTM terrain metrics expanded** - Now returns 6 metrics instead of 2
+  - **New metrics**: elevation (DEM), TRI (Terrain Ruggedness Index),
+    TPI (Topographic Position Index), roughness
+  - **Previous metrics**: slope, aspect (still included)
+  - **Processing**: All derivatives computed at native resolution before
+    aggregation for accuracy
+  - **Aggregation**: Circular mean for aspect, standard mean for others
+- **Global Human Modification Index (gHM)** - New covariate via Google
+  Earth Engine
+  - **Function**:
+    [`getGlobalHumanMod()`](https://atnt.github.io/spatialcovariates/reference/getGlobalHumanMod.md)
+    (optional, requires rgee)
+  - **Source**: Kennedy et al. (2019) via GEE asset
+    `CSP/HM/GlobalHumanModification`
+  - **Resolution**: 1km native, aggregated to target resolution
+  - **Range**: 0-1 (0 = no modification, 1 = maximum modification)
+  - **Default**: `include_ghm = FALSE` in
+    [`getBiasCovariates()`](https://atnt.github.io/spatialcovariates/reference/getBiasCovariates.md)
+
 ### Performance Improvements
 
 - **Optimisation for tile-based raster processing** - Reduced processing

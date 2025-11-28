@@ -40,6 +40,81 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="spatialcovariates-011-development">spatialcovariates 0.1.1 (Development)<a class="anchor" aria-label="anchor" href="#spatialcovariates-011-development"></a></h2>
 <div class="section level3">
+<h3 id="breaking-changes-0-1-1">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-1"></a></h3>
+<ul><li>
+<strong>ESA CCI Biomass functions now Plot2Map compatible</strong> - Parameter names updated for consistency
+<ul><li><p><strong>Affected functions</strong>: <code><a href="../reference/getESACCIAGB.html">getESACCIAGB()</a></code>, <code><a href="../reference/download_esacci_biomass.html">download_esacci_biomass()</a></code>, <code><a href="../reference/validate_esacci_biomass_args.html">validate_esacci_biomass_args()</a></code>, new <code><a href="../reference/ESACCIAGBtileNames.html">ESACCIAGBtileNames()</a></code></p></li>
+<li>
+<p><strong>Parameter changes</strong>:</p>
+<ul><li>
+<code>year</code> → <code>esacci_biomass_year</code>
+</li>
+<li>
+<code>version</code> → <code>esacci_biomass_version</code>
+</li>
+<li>
+<code>tiles_dir</code>/<code>output_folder</code> → <code>esacci_folder</code>
+</li>
+</ul></li>
+<li><p><strong>Default version changed</strong>: <code>"v3.0"</code> → <code>"latest"</code> (now uses v6.0)</p></li>
+<li><p><strong>Reason</strong>: Full compatibility with Plot2Map package for future integration</p></li>
+<li>
+<p><strong>Migration</strong>: Update parameter names in existing code:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Old (v0.1.0)</span></span>
+<span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span><span class="va">extent</span>, year <span class="op">=</span> <span class="fl">2010</span>, version <span class="op">=</span> <span class="st">"v3.0"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># New (v0.1.1+)</span></span>
+<span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span><span class="va">extent</span>, esacci_biomass_year <span class="op">=</span> <span class="fl">2010</span>, esacci_biomass_version <span class="op">=</span> <span class="st">"latest"</span><span class="op">)</span></span></code></pre></div>
+</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-1-1">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h3>
+<ul><li>
+<strong>ESA CCI Biomass v6.0 support</strong> - Added latest ESA CCI Biomass dataset
+<ul><li>
+<strong>New years</strong>: 2007 (new!), 2010, 2015-2022 (2022 is new!)</li>
+<li>
+<strong>Previous versions</strong>: 2010, 2017-2022</li>
+<li>
+<strong>Improvements in v6.0</strong>:
+<ul><li>Extended temporal coverage (2007, 2022)</li>
+<li>Improved calibration with extended ICESat-2 observations</li>
+<li>Refined cost function to reduce biases between time periods</li>
+</ul></li>
+<li>
+<strong>Reference</strong>: Santoro, M., &amp; Cartus, O. (2025). ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass for the years 2007, 2010, 2015-2022, v6.0. <a href="https://doi.org/10.5285/95913ffb6467447ca72c4e9d8cf30501" class="external-link uri">https://doi.org/10.5285/95913ffb6467447ca72c4e9d8cf30501</a>
+</li>
+</ul></li>
+<li>
+<strong>SRTM terrain metrics expanded</strong> - Now returns 6 metrics instead of 2
+<ul><li>
+<strong>New metrics</strong>: elevation (DEM), TRI (Terrain Ruggedness Index), TPI (Topographic Position Index), roughness</li>
+<li>
+<strong>Previous metrics</strong>: slope, aspect (still included)</li>
+<li>
+<strong>Processing</strong>: All derivatives computed at native resolution before aggregation for accuracy</li>
+<li>
+<strong>Aggregation</strong>: Circular mean for aspect, standard mean for others</li>
+</ul></li>
+<li>
+<strong>Global Human Modification Index (gHM)</strong> - New covariate via Google Earth Engine
+<ul><li>
+<strong>Function</strong>: <code><a href="../reference/getGlobalHumanMod.html">getGlobalHumanMod()</a></code> (optional, requires rgee)</li>
+<li>
+<strong>Source</strong>: Kennedy et al. (2019) via GEE asset <code>CSP/HM/GlobalHumanModification</code>
+</li>
+<li>
+<strong>Resolution</strong>: 1km native, aggregated to target resolution</li>
+<li>
+<strong>Range</strong>: 0-1 (0 = no modification, 1 = maximum modification)</li>
+<li>
+<strong>Default</strong>: <code>include_ghm = FALSE</code> in <code><a href="../reference/getBiasCovariates.html">getBiasCovariates()</a></code>
+</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
 <h3 id="performance-improvements-0-1-1">Performance Improvements<a class="anchor" aria-label="anchor" href="#performance-improvements-0-1-1"></a></h3>
 <ul><li>
 <strong>Optimisation for tile-based raster processing</strong> - Reduced processing time for typical regions
@@ -77,7 +152,7 @@
 <li><p><strong>Authentication</strong>: USGS server requires NASA Earthdata authentication (free account)</p></li>
 <li>
 <p><strong>Setup</strong>: Install <code>earthdatalogin</code> package for seamless authentication:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"earthdatalogin"</span><span class="op">)</span></span>
 <span><span class="fu">earthdatalogin</span><span class="fu">::</span><span class="fu"><a href="https://boettiger-lab.github.io/earthdatalogin/reference/edl_netrc.html" class="external-link">edl_netrc</a></span><span class="op">(</span>username <span class="op">=</span> <span class="st">"your_username"</span>, password <span class="op">=</span> <span class="st">"your_password"</span><span class="op">)</span></span></code></pre></div>
 </li>
@@ -111,7 +186,7 @@
 <ul><li><p><strong>Rationale</strong>: Avoids duplicate downloads when users fetch AGB and SD separately using <code><a href="../reference/getESACCIAGB.html">getESACCIAGB()</a></code>, which is often required for Plot2Map workflows.</p></li>
 <li>
 <p><strong>Migration</strong>: For Plot2Map workflows, use the recommended two-step approach:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 1: Get AGB and SD together (if required)</span></span>
 <span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span>extent <span class="op">=</span> <span class="va">bbox</span>, year <span class="op">=</span> <span class="fl">2010</span>, resolution <span class="op">=</span> <span class="st">"10km"</span><span class="op">)</span></span>
 <span><span class="va">agb_map</span> <span class="op">&lt;-</span> <span class="va">biomass</span><span class="op">$</span><span class="va">agb</span></span>

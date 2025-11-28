@@ -5,7 +5,12 @@ Generate ESA CCI AGB tile names for a region
 ## Usage
 
 ``` r
-esacci_tile_names(roi, year, version, type = "agb")
+esacci_tile_names(
+  roi,
+  esacci_biomass_year,
+  esacci_biomass_version,
+  type = "agb"
+)
 ```
 
 ## Arguments
@@ -14,11 +19,11 @@ esacci_tile_names(roi, year, version, type = "agb")
 
   sf object, SpatVector, or numeric bbox
 
-- year:
+- esacci_biomass_year:
 
   Numeric, year
 
-- version:
+- esacci_biomass_version:
 
   Character, version string
 

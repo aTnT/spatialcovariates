@@ -162,9 +162,9 @@
 <tr class="odd">
 <td><strong>AGB &amp; SD</strong></td>
 <td><code><a href="reference/getESACCIAGB.html">getESACCIAGB()</a></code></td>
-<td>ESA CCI Biomass</td>
+<td>ESA CCI Biomass v6.0</td>
 <td>100m</td>
-<td>2010, 2017-2022</td>
+<td>2007, 2010, 2015-2022</td>
 </tr>
 <tr class="even">
 <td><strong>Tree Canopy Cover 2010</strong></td>
@@ -228,14 +228,22 @@
 <code class="sourceCode R"><span><span class="co"># Fetch AGB and SD for 2010</span></span>
 <span><span class="va">biomass</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span></span>
 <span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
-<span>  year <span class="op">=</span> <span class="fl">2010</span>,</span>
-<span>  version <span class="op">=</span> <span class="st">"v3.0"</span>,</span>
+<span>  esacci_biomass_year <span class="op">=</span> <span class="fl">2010</span>,</span>
+<span>  esacci_biomass_version <span class="op">=</span> <span class="st">"latest"</span>,  <span class="co"># uses v6.0 by default</span></span>
 <span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Access individual layers</span></span>
 <span><span class="va">agb</span> <span class="op">&lt;-</span> <span class="va">biomass</span><span class="op">$</span><span class="va">agb</span>    <span class="co"># Aboveground biomass (Mg/ha)</span></span>
-<span><span class="va">sd</span> <span class="op">&lt;-</span> <span class="va">biomass</span><span class="op">$</span><span class="va">sd</span>      <span class="co"># Standard deviation (Mg/ha)</span></span></code></pre></div>
+<span><span class="va">sd</span> <span class="op">&lt;-</span> <span class="va">biomass</span><span class="op">$</span><span class="va">sd</span>      <span class="co"># Standard deviation (Mg/ha)</span></span>
+<span></span>
+<span><span class="co"># Use specific version if needed</span></span>
+<span><span class="va">biomass_2007</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getESACCIAGB.html">getESACCIAGB</a></span><span class="op">(</span></span>
+<span>  extent <span class="op">=</span> <span class="va">mexico_bbox</span>,</span>
+<span>  esacci_biomass_year <span class="op">=</span> <span class="fl">2007</span>, </span>
+<span>  esacci_biomass_version <span class="op">=</span> <span class="st">"v6.0"</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="st">"10km"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="tree-canopy-cover-2010-glad">Tree Canopy Cover 2010 (GLAD)<a class="anchor" aria-label="anchor" href="#tree-canopy-cover-2010-glad"></a>
@@ -422,7 +430,8 @@
 <div class="section level3">
 <h3 id="esa-cci-biomass">ESA CCI Biomass<a class="anchor" aria-label="anchor" href="#esa-cci-biomass"></a>
 </h3>
-<p>Santoro, M., &amp; Cartus, O. (2023). ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass for the years 2010, 2017, 2018, 2019 and 2020. NERC EDS Centre for Environmental Data Analysis. <a href="https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8" class="external-link uri">https://doi.org/10.5285/5f331c418e9f4935b8eb1b836f8a91b8</a></p>
+<p>Santoro, M., &amp; Cartus, O. (2025). ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass for the years 2007, 2010, 2015, 2016, 2017, 2018, 2019, 2020, 2021 and 2022, v6.0. NERC EDS Centre for Environmental Data Analysis. <a href="https://doi.org/10.5285/95913ffb6467447ca72c4e9d8cf30501" class="external-link uri">https://doi.org/10.5285/95913ffb6467447ca72c4e9d8cf30501</a></p>
+<p><strong>Latest Version</strong>: v6.0 (April 2025) - Adds year 2007 and 2022, improved calibration with extended ICESat-2 observations</p>
 </div>
 <div class="section level3">
 <h3 id="glad-tree-canopy-cover-2010">GLAD Tree Canopy Cover 2010<a class="anchor" aria-label="anchor" href="#glad-tree-canopy-cover-2010"></a>
@@ -482,7 +491,7 @@
 <tbody>
 <tr class="odd">
 <td>ESA CCI AGB</td>
-<td>2010, 2017-2022</td>
+<td>2007, 2010, 2015-2022 (v6.0)</td>
 <td>Uses specified year if available, otherwise 2010</td>
 </tr>
 <tr class="even">
