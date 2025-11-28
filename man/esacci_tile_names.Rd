@@ -4,14 +4,19 @@
 \alias{esacci_tile_names}
 \title{Generate ESA CCI AGB tile names for a region}
 \usage{
-esacci_tile_names(roi, year, version, type = "agb")
+esacci_tile_names(
+  roi,
+  esacci_biomass_year,
+  esacci_biomass_version,
+  type = "agb"
+)
 }
 \arguments{
 \item{roi}{sf object, SpatVector, or numeric bbox}
 
-\item{year}{Numeric, year}
+\item{esacci_biomass_year}{Numeric, year}
 
-\item{version}{Character, version string}
+\item{esacci_biomass_version}{Character, version string}
 
 \item{type}{Character, either "agb" or "sd" for standard deviation}
 }

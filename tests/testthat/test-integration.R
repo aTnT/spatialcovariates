@@ -286,12 +286,12 @@ test_that("Error handling works for invalid inputs", {
   )
 
   expect_error(
-    getESACCIAGB(extent = test_bbox, year = 1999),
+    getESACCIAGB(extent = test_bbox, esacci_biomass_year = 1999),
     "Invalid year"
   )
 
   expect_error(
-    getESACCIAGB(extent = test_bbox, year = 2010, version = "v1.0"),
+    getESACCIAGB(extent = test_bbox, esacci_biomass_year = 2010, esacci_biomass_version = "v1.0"),
     "Invalid version"
   )
 

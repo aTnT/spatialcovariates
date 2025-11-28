@@ -5,25 +5,22 @@
 \title{Download ESA CCI Biomass data from CEDA Archive}
 \usage{
 download_esacci_biomass(
-  roi = NULL,
-  year = 2010,
-  version = "v3.0",
-  output_folder = "data/ESACCI-BIOMASS",
-  n_cores = 1,
+  esacci_biomass_year = "latest",
+  esacci_biomass_version = "latest",
+  esacci_folder = "data/ESACCI-BIOMASS",
+  n_cores = parallel::detectCores() - 1,
   timeout = 600,
   file_names = NULL
 )
 }
 \arguments{
-\item{roi}{sf object, SpatVector, or NULL for all tiles}
+\item{esacci_biomass_year}{Numeric or "latest", year to download (2007, 2010, 2015-2022)}
 
-\item{year}{Numeric or "latest", year to download (2010, 2015-2022)}
+\item{esacci_biomass_version}{Character or "latest", version to download (v2.0-v6.0)}
 
-\item{version}{Character or "latest", version to download (v2.0-v6.0)}
+\item{esacci_folder}{Character, directory to save files (default: "data/ESACCI-BIOMASS")}
 
-\item{output_folder}{Character, directory to save files (default: "data/ESACCI-BIOMASS")}
-
-\item{n_cores}{Integer, number of cores for parallel download (default: 1)}
+\item{n_cores}{Integer, number of cores for parallel download (default: parallel::detectCores() - 1)}
 
 \item{timeout}{Numeric, download timeout in seconds (default: 600)}
 
@@ -35,4 +32,3 @@ Character vector of downloaded file paths
 \description{
 Download ESA CCI Biomass data from CEDA Archive
 }
-\keyword{internal}

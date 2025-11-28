@@ -92,7 +92,8 @@
 #' # Recommended: Fetch AGB and SD separately (for Plot2Map workflows)
 #' biomass_data <- getESACCIAGB(
 #'   extent = mexico_bbox,
-#'   year = 2010,
+#'   esacci_biomass_year = 2010,
+#'   esacci_biomass_version = "latest",
 #'   resolution = "10km"
 #' )
 #' agb_map <- biomass_data$agb
@@ -166,11 +167,12 @@ getBiasCovariates <- function(extent,
     tryCatch({
       esa <- getESACCIAGB(
         extent = extent,
-        year = year,
+        esacci_biomass_year = year,
+        esacci_biomass_version = "latest",
         resolution = resolution,
         outdir = outdir,
         download = download,
-        tiles_dir = file.path(data_dir, "ESACCI-BIOMASS"),
+        esacci_folder = file.path(data_dir, "ESACCI-BIOMASS"),
         n_cores = n_cores
       )
       if (!is.null(esa$agb)) {
