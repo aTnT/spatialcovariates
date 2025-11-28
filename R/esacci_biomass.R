@@ -237,7 +237,9 @@ ESACCIAGBtileNames <- function(pol,
   } else if (inherits(pol, "sf") || inherits(pol, "sfc")) {
     bb_vec <- sf::st_bbox(pol)
   } else {
-    stop("The object representing the polygon of interest must be of class SpatVector from terra package or any sf object.")
+    stop(
+      "The object must be of class SpatVector from terra package or any sf object."
+    )
   }
 
   crds <- expand.grid(x = c(bb_vec[1], bb_vec[3]), y = c(bb_vec[2], bb_vec[4]))
@@ -248,14 +250,17 @@ ESACCIAGBtileNames <- function(pol,
     lat <- 10 * (crds$y[i] %/% 10) + 10
     LtX <- ifelse(lon < 0, "W", "E")
     LtY <- ifelse(lat < 0, "S", "N")
-    WE <- paste0(LtX, sprintf('%03d', abs(lon)))
-    NS <- paste0(LtY, sprintf('%02d', abs(lat)))
+    WE <- paste0(LtX, sprintf("%03d", abs(lon)))
+    NS <- paste0(LtY, sprintf("%02d", abs(lat)))
 
     if (esacci_biomass_version == "v5.01") {
       esacci_biomass_version <- "v5.0"
     }
 
-    fnms[i] <- paste0(NS, WE, "_ESACCI-BIOMASS-L4-AGB-MERGED-100m-", esacci_biomass_year, "-f", esacci_biomass_version, ".tif")
+    fnms[i] <- paste0(
+      NS, WE, "_ESACCI-BIOMASS-L4-AGB-MERGED-100m-",
+      esacci_biomass_year, "-f", esacci_biomass_version, ".tif"
+    )
   }
   unique(setdiff(fnms, grep("1000m|AGB_SD|aux", fnms, value = TRUE)))
 }
