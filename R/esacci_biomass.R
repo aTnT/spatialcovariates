@@ -69,10 +69,14 @@ validate_esacci_biomass_args <- function(esacci_biomass_year, esacci_biomass_ver
 esacci_tile_names <- function(roi, esacci_biomass_year, esacci_biomass_version, type = "agb") {
   bbox <- validate_extent(roi)
 
-  # Expand bbox to corner coordinates
+  # Generate all 10-degree tile boundaries that cover the bbox
+  # ESA-CCI tiles are 10x10 degrees, need all tiles not just corners
+  lon_seq <- seq(floor(bbox[1]/10)*10, ceiling(bbox[3]/10)*10, by=10)
+  lat_seq <- seq(floor(bbox[2]/10)*10, ceiling(bbox[4]/10)*10, by=10)
+
   crds <- expand.grid(
-    x = c(bbox[1], bbox[3]),
-    y = c(bbox[2], bbox[4])
+    x = lon_seq,
+    y = lat_seq
   )
 
   tile_names <- character(nrow(crds))
