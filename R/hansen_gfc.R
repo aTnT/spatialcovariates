@@ -12,10 +12,13 @@ hansen_tile_names <- function(roi) {
   bbox <- validate_extent(roi)
 
   # Hansen uses 10x10 degree tiles named by top-left corner
-  # Get all corners of the bbox
+  # Generate all 10-degree tile boundaries that cover the bbox
+  lon_seq <- seq(floor(bbox[1]/10)*10, ceiling(bbox[3]/10)*10, by=10)
+  lat_seq <- seq(floor(bbox[2]/10)*10, ceiling(bbox[4]/10)*10, by=10)
+
   crds <- expand.grid(
-    x = c(bbox[1], bbox[3]),
-    y = c(bbox[2], bbox[4])
+    x = lon_seq,
+    y = lat_seq
   )
 
   tile_names <- character(nrow(crds))

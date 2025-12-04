@@ -92,10 +92,13 @@ calc_aggregation_factor <- function(native_res, target_res) {
 #' @return Character vector of tile names in format "NNx_EEWW"
 #' @keywords internal
 calculate_tile_names <- function(bbox, tile_size = 10) {
-  # Expand bbox to corner coordinates
+  # Generate all tile boundaries that cover the bbox
+  lon_seq <- seq(floor(bbox[1]/tile_size)*tile_size, ceiling(bbox[3]/tile_size)*tile_size, by=tile_size)
+  lat_seq <- seq(floor(bbox[2]/tile_size)*tile_size, ceiling(bbox[4]/tile_size)*tile_size, by=tile_size)
+
   crds <- expand.grid(
-    x = c(bbox[1], bbox[3]),
-    y = c(bbox[2], bbox[4])
+    x = lon_seq,
+    y = lat_seq
   )
 
   tile_names <- character(nrow(crds))

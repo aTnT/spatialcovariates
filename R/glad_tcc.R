@@ -12,10 +12,13 @@ glad_tcc_tile_names <- function(roi) {
   bbox <- validate_extent(roi)
 
   # GLAD TCC 2010 uses same 10x10 degree tile system as Hansen GFC
-  # Tiles are named by top-left corner
+  # Generate all 10-degree tile boundaries that cover the bbox
+  lon_seq <- seq(floor(bbox[1]/10)*10, ceiling(bbox[3]/10)*10, by=10)
+  lat_seq <- seq(floor(bbox[2]/10)*10, ceiling(bbox[4]/10)*10, by=10)
+
   crds <- expand.grid(
-    x = c(bbox[1], bbox[3]),
-    y = c(bbox[2], bbox[4])
+    x = lon_seq,
+    y = lat_seq
   )
 
   tile_names <- character(nrow(crds))

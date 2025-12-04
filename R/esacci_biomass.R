@@ -246,7 +246,11 @@ ESACCIAGBtileNames <- function(pol,
     )
   }
 
-  crds <- expand.grid(x = c(bb_vec[1], bb_vec[3]), y = c(bb_vec[2], bb_vec[4]))
+  # Generate all 10-degree tile boundaries that cover the bbox
+  lon_seq <- seq(floor(bb_vec[1]/10)*10, ceiling(bb_vec[3]/10)*10, by=10)
+  lat_seq <- seq(floor(bb_vec[2]/10)*10, ceiling(bb_vec[4]/10)*10, by=10)
+
+  crds <- expand.grid(x = lon_seq, y = lat_seq)
   fnms <- character(nrow(crds))
 
   for (i in 1:nrow(crds)) {
